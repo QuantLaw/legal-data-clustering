@@ -1,0 +1,12 @@
+beautifulsoup4
+pandas
+networkx
+lxml
+regex
+infomap
+python-louvain
+textdistance
+cdlib
+infomap
+coverage
+numpy
