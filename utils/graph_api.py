@@ -1,8 +1,9 @@
 import itertools
-from collections import Counter
+import os
+from collections import Counter, defaultdict
 
 import networkx as nx
-from cdlib import NodeClustering
+from cdlib import NodeClustering, readwrite
 
 from legal_data_preprocessing.utils.graph_api import *
 
@@ -140,3 +141,50 @@ def get_community_ids(clustering: NodeClustering):
     return sorted(
         set(itertools.chain.from_iterable(clustering.to_node_community_map().values()))
     )
+
+
+def quotient_decision_graph(G, merge_decisions, merge_statutes):
+    H = nx.DiGraph()
+
+    # Decision nodes and containment edges
+    if merge_decisions:
+        documents = [n for n, b in G.nodes(data="type") if b == "document"]
+        H.add_nodes_from([(n.split("_")[0], G.nodes[n]) for n in documents])
+    else:
+        decisions = [n for n, b in G.nodes(data="bipartite") if b == "decision"]
+        H.add_nodes_from([(n, G.nodes[n]) for n in decisions])
+
+        containment = [
+            (u, v, d)
+            for u, v, d in G.edges(data=True)
+            if d["edge_type"] == "containment"
+        ]
+        H.add_edges_from(containment)
+
+    # Statute nodes
+    if merge_statutes:
+        statute_nodes = [n for n, b in G.nodes(data="bipartite") if b == "statute"]
+        statute_nodes_merged = list(sorted({n.split("_")[0] for n in statute_nodes}))
+        H.add_nodes_from(statute_nodes_merged, bipartite="statute")
+    else:
+        statute_nodes = [n for n, b in G.nodes(data="bipartite") if b == "statute"]
+        H.add_nodes_from([(n, G.nodes[n]) for n in statute_nodes])
+
+    # Reference edges
+    references = [
+        [u, v, d] for u, v, d in G.edges(data=True) if d["edge_type"] == "reference"
+    ]
+
+    references_dict = defaultdict(int)
+    for u, v, d in references:
+        u_converted = u.split("_")[0] if merge_decisions else u
+        v_converted = v.split("_")[0] if merge_statutes else v
+        references_dict[(u_converted, v_converted)] += d["weight"]
+
+    references_converted = [
+        (k[0], k[1], {"weight": v, "edge_type": "reference"})
+        for k, v in references_dict.items()
+    ]
+    H.add_edges_from(references_converted)
+
+    return H

@@ -5,14 +5,13 @@ from cdlib import NodeClustering
 from cdlib.utils import convert_graph_formats
 import networkx as nx
 from collections import defaultdict
-import community as louvain_modularity
 from community import generate_dendrogram, partition_at_level
 
 
 def infomap(
     g,
     seed=None,
-    options="--inner-parallelization --silent",
+    options="--inner-parallelization --silent -d",
     markov_time=1.0,
     number_of_modules=None,
     return_tree=False,
@@ -52,7 +51,7 @@ def infomap(
     options_compiled = options + f" --markov-time {markov_time}"
     if number_of_modules:
         options_compiled += f" --preferred-number-of-modules {number_of_modules}"
-    if seed:
+    if seed is not None:
         options_compiled += f" --seed {seed}"
 
     # try:
@@ -105,19 +104,20 @@ def infomap(
         D.add_nodes_from(g.nodes(data=True))
 
         for node in im.iterTree(maxClusterLevel=-1):
+            node_path_str = [str(c) for c in node.path]
             if node.isRoot():
                 D.add_node("root")
             else:
                 if node.isLeaf():
                     node_key = g1.nodes[node.physicalId]["name"]
                 else:
-                    node_key = "tree_" + "_".join(node.path)
+                    node_key = "tree_" + "_".join(node_path_str)
                     D.add_node(node_key)
 
                 if len(node.path) == 1:
                     parent_key = "root"
                 else:
-                    parent_key = "tree_" + "_".join(node.path[:-1])
+                    parent_key = "tree_" + "_".join(node_path_str[:-1])
 
                 assert D.has_node(parent_key)
                 D.add_edge(parent_key, node_key)
@@ -193,24 +193,28 @@ def louvain(g, weight="weight", resolution=1.0, seed=None, return_tree=False):
 
         graph_key_for_nr = dict()
 
-        for level, level_data in enumerate(reversed(dendo)):
-            for nr, parent_nr in level_data.items():
-                if level == 0:
-                    parent_key = "root"
-                    node_path = "tree"
-                else:
-                    parent_key = graph_key_for_nr[(level - 1, parent_nr)]
-                    node_path = parent_key
+        current_counts = defaultdict(int)
 
-                if level == len(dendo) - 1:
+        for parent_level, level_data in enumerate(reversed(dendo)):
+            for nr, parent_nr in level_data.items():
+                if (
+                    parent_level == 0
+                    and (parent_level, parent_nr) not in graph_key_for_nr
+                ):
+                    first_level_key = f"tree_{current_counts['tree']}"
+                    current_counts["tree"] += 1
+
+                    D.add_edge("root", first_level_key)
+                    graph_key_for_nr[(parent_level, parent_nr)] = first_level_key
+
+                parent_key = graph_key_for_nr[(parent_level, parent_nr)]
+
+                if parent_level == len(dendo) - 1:
                     node_key = nr
                 else:
-                    i = 0
-                    while f"{node_path}_{i}" in graph_key_for_nr.values():
-                        i += 1
-
-                    node_key = f"{node_path}_{i}"
-                    graph_key_for_nr[(level, nr)] = node_key
+                    node_key = f"{parent_key}_{current_counts[parent_key]}"
+                    current_counts[parent_key] += 1
+                    graph_key_for_nr[(parent_level + 1, nr)] = node_key
 
                 D.add_edge(parent_key, node_key)
 

@@ -9,6 +9,7 @@ from legal_data_preprocessing.statics import (
     US_REFERENCE_PARSED_PATH,
     DE_SNAPSHOT_MAPPING_EDGELIST_PATH,
     US_SNAPSHOT_MAPPING_EDGELIST_PATH,
+    DE_DECISIONS_NETWORK,
 )
 
 from pipeline.cd_cluster import cd_cluster_prepare, cd_cluster
@@ -17,7 +18,11 @@ from pipeline.cd_cluster_evolution_graph import (
     cd_cluster_evolution_graph,
 )
 from pipeline.cd_cluster_texts import cd_cluster_texts_prepare, cd_cluster_texts
-from pipeline.cd_preprocessing import cd_preprocessing_prepare, cd_preprocessing
+from pipeline.cd_preprocessing import (
+    cd_preprocessing_prepare,
+    cd_preprocessing,
+    get_decision_network,
+)
 
 from legal_data_preprocessing.utils.common import process_items
 from statics import (
@@ -101,6 +106,27 @@ if __name__ == "__main__":
             "Special param: -1. Merging into chapter in US and Buch or Gesetz in DE"
         ),
     )
+    parser.add_argument(
+        "--pp-co-occurrence",
+        dest="pp_co_occurrences",
+        nargs="+",
+        type=float,
+        default=[0],
+        help="Select if you want to add co-occurrences to the model. "
+        "0 ignores crossreferences,"
+        "Values > 0 set the weight of crossreferences"
+        "-1 ignores cross-references and uses co-occurrences only",
+    )
+    parser.add_argument(
+        "--pp-co-occurrence-type",
+        dest="pp_co_occurrence_types",
+        nargs="+",
+        type=str,
+        default=[None],
+        help="If co-occurrence is not 0, select a type. Options: "
+        "document (uses co-occurrences of e.g. a decision)"
+        "seqitem (uses co-occurrences of e.g. a paragraph of a decision)",
+    )
 
     # Cluster args
     parser.add_argument(
@@ -116,8 +142,8 @@ if __name__ == "__main__":
         dest="consensus",
         nargs="+",
         type=int,
-        default=[1000],
-        help="Rerun infomap with different seeds and altered weights of edges and negotiate common result.",
+        default=[0],
+        help="Rerun the clustering with different seeds and altered weights of edges and negotiate common result.",
     )
 
     parser.add_argument(
@@ -125,8 +151,8 @@ if __name__ == "__main__":
         dest="numbers_of_modules",
         nargs="+",
         type=int,
-        default=[100],
-        help="Sets infomap parameter referred-number-of-modules. Default: 100",
+        default=[0],
+        help="Sets infomap parameter referred-number-of-modules. (no effect for louvain) Default: 0",
     )
 
     parser.add_argument(
@@ -159,6 +185,8 @@ if __name__ == "__main__":
         pp_ratios=args.pp_ratios,
         pp_decays=args.pp_decays,
         pp_merges=args.pp_merges,
+        pp_co_occurrences=args.pp_co_occurrences,
+        pp_co_occurrence_types=args.pp_co_occurrence_types,
         seeds=list(range(args.seeds)),
         markov_times=args.markov_times,
         numbers_of_modules=args.numbers_of_modules,
@@ -195,9 +223,13 @@ if __name__ == "__main__":
         if dataset == "de":
             source_folder = DE_CROSSREFERENCE_GRAPH_PATH
             target_folder = DE_CD_PREPROCESSED_GRAPH_PATH
+            decision_network_path = DE_DECISIONS_NETWORK
+            if any(v != 0 for v in cluster_mapping_configs["pp_co_occurrences"]):
+                get_decision_network(decision_network_path)
         elif dataset == "us":
             source_folder = US_CROSSREFERENCE_GRAPH_PATH
             target_folder = US_CD_PREPROCESSED_GRAPH_PATH
+            decision_network_path = None
 
         items = cd_preprocessing_prepare(
             overwrite, snapshots, cluster_mapping_configs, source_folder, target_folder
@@ -207,7 +239,7 @@ if __name__ == "__main__":
             [],
             action_method=cd_preprocessing,
             use_multiprocessing=use_multiprocessing,
-            args=(source_folder, target_folder),
+            args=(source_folder, target_folder, decision_network_path),
         )
 
     if "cluster" in steps:

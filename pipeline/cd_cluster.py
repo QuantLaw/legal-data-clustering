@@ -24,6 +24,8 @@ def cd_cluster_prepare(overwrite, snapshots, pp_configs, source_folder, target_f
             pp_ratio=pp_ratio,
             pp_decay=pp_decay,
             pp_merge=pp_merge,
+            pp_co_occurrence=pp_co_occurrence,
+            pp_co_occurrence_type=pp_co_occurrence_type,
             seed=seed,
             markov_time=markov_time,
             consensus=consensus,
@@ -34,6 +36,8 @@ def cd_cluster_prepare(overwrite, snapshots, pp_configs, source_folder, target_f
         for pp_ratio in pp_configs["pp_ratios"]
         for pp_decay in pp_configs["pp_decays"]
         for pp_merge in pp_configs["pp_merges"]
+        for pp_co_occurrence in pp_configs["pp_co_occurrences"]
+        for pp_co_occurrence_type in pp_configs["pp_co_occurrence_types"]
         for markov_time in pp_configs["markov_times"]
         for consensus in pp_configs["consensus"]
         for seed in pp_configs["seeds"]
@@ -124,7 +128,7 @@ def cluster(g, config, return_tree, seed=None):
         return cdlib_custom_algorithms.louvain(
             g,
             weight="weight",
-            seed=seed,
+            seed=seed or config.get("seed"),
             resolution=config["markov_time"],
             return_tree=return_tree,
         )

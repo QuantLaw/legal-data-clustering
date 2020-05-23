@@ -17,6 +17,8 @@ def cd_cluster_texts_prepare(
             pp_ratio=pp_ratio,
             pp_decay=pp_decay,
             pp_merge=pp_merge,
+            pp_co_occurrence=pp_co_occurrence,
+            pp_co_occurrence_type=pp_co_occurrence_type,
             seed=seed,
             markov_time=markov_time,
             consensus=consensus,
@@ -27,6 +29,8 @@ def cd_cluster_texts_prepare(
         for pp_ratio in pp_configs["pp_ratios"]
         for pp_decay in pp_configs["pp_decays"]
         for pp_merge in pp_configs["pp_merges"]
+        for pp_co_occurrence in pp_configs["pp_co_occurrences"]
+        for pp_co_occurrence_type in pp_configs["pp_co_occurrence_types"]
         for markov_time in pp_configs["markov_times"]
         for consensus in pp_configs["consensus"]
         for seed in pp_configs["seeds"]

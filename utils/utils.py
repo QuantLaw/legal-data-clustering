@@ -8,6 +8,8 @@ def filename_for_pp_config(
     pp_ratio,
     pp_decay,
     pp_merge,
+    pp_co_occurrence,
+    pp_co_occurrence_type,
     file_ext,
     seed=None,
     markov_time=None,
@@ -16,8 +18,10 @@ def filename_for_pp_config(
     method=None,
 ):
     filename = f"{snapshot}_{pp_ratio}_{pp_decay}_{pp_merge}"
+    if pp_co_occurrence:
+        filename += f"_o{pp_co_occurrence}_t-{pp_co_occurrence_type}"
     if method:
-        filename += f"_{method}"
+        filename += f"_a-{method}"
     if number_of_modules:
         filename += f"_n{number_of_modules}"
     if markov_time:
@@ -38,8 +42,13 @@ def get_config_from_filename(filename):
         pp_merge=int(components[3].replace("-", ".")),
     )
     if len(components) > 4:
-        config["method"] = components[4]
-        for component in components[5:]:
+        for component in components[4:]:
+            if component.startswith("o"):
+                config["pp_co_occurrence"] = float(component[1:].replace("-", "."))
+            if component.startswith("t-"):
+                config["pp_co_occurrence_type"] = component[len("t-") :]
+            if component.startswith("a-"):
+                config["method"] = component[len("a-") :]
             if component.startswith("n"):
                 config["number_of_modules"] = int(component[1:].replace("-", "."))
             if component.startswith("m"):
