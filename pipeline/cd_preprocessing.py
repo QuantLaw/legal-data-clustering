@@ -302,13 +302,16 @@ def add_co_occurrences(config, G, G_orig, nodes_mapping, decision_network_path):
     )
 
     nodes_citekey_mapping = {
-        k: v for k, v in nx.get_node_attributes(G, "citekey").items() if v
+        v: k for k, v in nx.get_node_attributes(G, "citekey").items() if v
     }
     for k, v in nodes_mapping.items():
         if "citekey" in G_orig.nodes[k]:
             citekey = G_orig.nodes[k]["citekey"]
             simplified_citekey = simplify_citekey(citekey)
-            if simplified_citekey in nodes_citekey_mapping:
+            if (
+                simplified_citekey in nodes_citekey_mapping
+                and nodes_citekey_mapping[simplified_citekey] != v
+            ):
                 print(
                     "Conflict:",
                     simplified_citekey,
@@ -322,7 +325,11 @@ def add_co_occurrences(config, G, G_orig, nodes_mapping, decision_network_path):
     co_occurrence_edges = Counter()
     for node in C_merged.nodes:
         if C_merged.nodes[node]["bipartite"] == "decision":
-            edges = list(C_merged.edges(node, data="weight"))
+            edges = [
+                (u, v, d["weight"])
+                for u, v, d in C_merged.edges(node, data=True)
+                if d["edge_type"] == "reference"
+            ]
 
             simplified_citekeys = [simplify_citekey(v) for u, v, w in edges]
 

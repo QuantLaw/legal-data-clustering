@@ -5,7 +5,22 @@ from collections import Counter, defaultdict
 import networkx as nx
 from cdlib import NodeClustering, readwrite
 
+from legal_data_preprocessing.statics import (
+    US_CROSSREFERENCE_GRAPH_PATH,
+    DE_CROSSREFERENCE_GRAPH_PATH,
+)
 from legal_data_preprocessing.utils.graph_api import *
+from statics import (
+    US_CD_CLUSTER_PATH,
+    DE_CD_CLUSTER_PATH,
+    US_CD_PREPROCESSED_GRAPH_PATH,
+    DE_CD_PREPROCESSED_GRAPH_PATH,
+)
+from utils.utils import (
+    get_config_from_filename,
+    filename_for_pp_config,
+    simplify_config_for_preprocessed_graph,
+)
 
 
 def add_communities_to_graph(clustering: NodeClustering):
@@ -42,7 +57,7 @@ def add_community_to_graph(clustering: NodeClustering):
     nx.set_node_attributes(clustering.graph, community, "community")
 
 
-def get_clustering_result(cluster_path, dataset, graph_type):
+def get_clustering_result(cluster_path, dataset, graph_type, path_prefix=""):
     """
     read the clustering result and the respective graph.
     ::param cluster_path: path of the cdlib.readwrite.write_community_json output
@@ -57,27 +72,36 @@ def get_clustering_result(cluster_path, dataset, graph_type):
     dataset_folder = f"{dataset.upper()}-data"
 
     if graph_type == "clustering":
-        graph_filename = "_".join(filename_base.split("_")[:4])
-        graph_path = (
-            f"../{dataset_folder}/cd_1_preprocessed_graph/{graph_filename}.gpickle.gz"
+        config = get_config_from_filename(filename_base)
+        graph_filename = filename_for_pp_config(
+            **simplify_config_for_preprocessed_graph(config)
         )
+        graph_path = path_prefix + (
+            US_CD_PREPROCESSED_GRAPH_PATH
+            if dataset.lower() == "us"
+            else DE_CD_PREPROCESSED_GRAPH_PATH
+        )
+        graph_path += f"/{graph_filename}"
         G = nx.read_gpickle(graph_path)
     elif graph_type in ["seqitems", "subseqitems"]:
-        if dataset == "de":
-            graph_folder = "11_crossreference_graph"
-        elif dataset == "us":
-            graph_folder = "7_crossreference_graph"
-        else:
-            raise Exception(f"dataset {dataset} is not an allowed")
-        graph_path = (
-            f"../{dataset_folder}/{graph_folder}/{graph_type}/{snapshot}.gpickle.gz"
+        graph_path = path_prefix + (
+            US_CROSSREFERENCE_GRAPH_PATH
+            if dataset.lower() == "us"
+            else DE_CROSSREFERENCE_GRAPH_PATH
         )
+
+        graph_path = +(f"/{graph_type}/{snapshot}.gpickle.gz")
         G = nx.read_gpickle(graph_path)
 
     else:
         raise Exception(f"graph_type {graph_type} not allowed")
 
-    clustering = readwrite.read_community_json(cluster_path)
+    clustering = readwrite.read_community_json(
+        path_prefix
+        + (US_CD_CLUSTER_PATH if dataset.lower() == "us" else DE_CD_CLUSTER_PATH)
+        + "/"
+        + cluster_path
+    )
     clustering.graph = G
 
     add_communities_to_graph(clustering)
@@ -188,3 +212,63 @@ def quotient_decision_graph(G, merge_decisions, merge_statutes):
     H.add_edges_from(references_converted)
 
     return H
+
+
+def quotient_graph(
+    G, node_attribute, edge_types=["reference"], self_loops=False, root_level=-1
+):
+    """
+    Generate the quotient graph with all nodes sharing the same node_attribute condensed into a single node.
+    Attribute aggregation functions not currently implemented; primary use case currently aggregation by law_name.
+    """
+
+    # node_key:attribute_value map
+    attribute_data = dict(G.nodes(data=node_attribute))
+    # set cluster -1 if they were not part of the clustering (guess: those are empty laws)
+    attribute_data = {
+        k: (v if v is not None else -1) for k, v in attribute_data.items()
+    }
+    # unique values in that map
+    unique_values = sorted(list(set(attribute_data.values())))
+
+    # remove the root if root_level is given
+    if root_level is not None:
+        root = [x for x in G.nodes() if G.nodes[x]["level"] == root_level][0]
+        unique_values.remove(root)
+    else:
+        root = None
+
+    # build a new MultiDiGraph
+    nG = nx.MultiDiGraph()
+
+    # add nodes
+    new_nodes = {x: [] for x in unique_values}
+    nG.add_nodes_from(unique_values)
+
+    # sort nodes into buckets
+    for n in attribute_data.keys():
+        if n != root:
+            mapped_to = attribute_data[n]
+            new_nodes[mapped_to].append(n)
+            if G.nodes[n].get("heading") == mapped_to:
+                for x in G.nodes[n].keys():
+                    nG.nodes[mapped_to][x] = G.nodes[n][x]
+
+    # add edges
+    for e in G.edges(data=True):
+        if e[-1]["edge_type"] not in edge_types:
+            continue
+        if (True if self_loops else attribute_data[e[0]] != attribute_data[e[1]]) and (
+            True if root_level is None else G.nodes[e[0]]["level"] != root_level
+        ):  # special treatment for root
+            k = nG.add_edge(
+                attribute_data[e[0]], attribute_data[e[1]], edge_type=e[-1]["edge_type"]
+            )
+            if e[-1]["edge_type"] == "sequence":
+                nG.edges[attribute_data[e[0]], attribute_data[e[1]], k]["weight"] = e[
+                    -1
+                ]["weight"]
+
+    nG.graph["name"] = f'{G.graph["name"]}_quotient_graph_{node_attribute}'
+
+    return nG

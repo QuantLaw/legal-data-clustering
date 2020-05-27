@@ -8,9 +8,9 @@ def filename_for_pp_config(
     pp_ratio,
     pp_decay,
     pp_merge,
-    pp_co_occurrence,
-    pp_co_occurrence_type,
     file_ext,
+    pp_co_occurrence=None,
+    pp_co_occurrence_type=None,
     seed=None,
     markov_time=None,
     consensus=0,
@@ -33,28 +33,53 @@ def filename_for_pp_config(
     return filename.replace(".", "-") + file_ext
 
 
+def convert_filename_component_to_number(text, value_type=float):
+    return value_type(text[0] + text[1:].replace("-", "."))
+
+
 def get_config_from_filename(filename):
     components = filename.split("_")
     config = dict(
-        snaphot=components[0],
-        pp_ratio=float(components[1].replace("-", ".")),
-        pp_decay=float(components[2].replace("-", ".")),
-        pp_merge=int(components[3].replace("-", ".")),
+        snapshot=components[0],
+        pp_ratio=convert_filename_component_to_number(components[1]),
+        pp_decay=convert_filename_component_to_number(components[2]),
+        pp_merge=convert_filename_component_to_number(components[3], value_type=int),
     )
     if len(components) > 4:
         for component in components[4:]:
             if component.startswith("o"):
-                config["pp_co_occurrence"] = float(component[1:].replace("-", "."))
+                config["pp_co_occurrence"] = convert_filename_component_to_number(
+                    component[1:]
+                )
             if component.startswith("t-"):
                 config["pp_co_occurrence_type"] = component[len("t-") :]
             if component.startswith("a-"):
                 config["method"] = component[len("a-") :]
             if component.startswith("n"):
-                config["number_of_modules"] = int(component[1:].replace("-", "."))
+                config["number_of_modules"] = convert_filename_component_to_number(
+                    component[1:], value_type=int
+                )
             if component.startswith("m"):
-                config["markov_time"] = float(component[1:].replace("-", "."))
+                config["markov_time"] = convert_filename_component_to_number(
+                    component[1:]
+                )
             if component.startswith("s"):
-                config["seed"] = int(component[1:].replace("-", "."))
+                config["seed"] = convert_filename_component_to_number(
+                    component[1:], value_type=int
+                )
             if component.startswith("c"):
-                config["consensus"] = int(component[1:].replace("-", "."))
+                config["consensus"] = convert_filename_component_to_number(
+                    component[1:], value_type=int
+                )
+    return config
+
+
+def simplify_config_for_preprocessed_graph(config):
+    config = config.copy()
+    config["seed"] = None
+    config["markov_time"] = None
+    config["consensus"] = 0
+    config["number_of_modules"] = None
+    config["method"] = None
+    config["file_ext"] = ".gpickle.gz"
     return config
