@@ -382,7 +382,12 @@ def add_co_occurrences(config, G, G_orig, nodes_mapping, decision_network_path):
         )
 
         cooccurrence_factor = total_weight_reference / total_weight_cooccurrence
-        print(total_weight_reference, total_weight_cooccurrence, cooccurrence_factor)
+        print(
+            "cooccurrence_factor",
+            cooccurrence_factor,
+            "for",
+            filename_for_pp_config(**config, file_ext=""),
+        )
 
         for u, v, k, edge_type in G.edges(keys=True, data="edge_type"):
             if edge_type == "cooccurrence":
@@ -398,6 +403,5 @@ def add_co_occurrences(config, G, G_orig, nodes_mapping, decision_network_path):
             for u, v, k, edge_type in G.edges(keys=True, data="edge_type")
             if edge_type == "reference"
         )
-        print(total_weight_reference, total_weight_cooccurrence, cooccurrence_factor)
 
     return missing_nodes

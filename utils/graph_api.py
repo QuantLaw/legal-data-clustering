@@ -90,7 +90,7 @@ def get_clustering_result(cluster_path, dataset, graph_type, path_prefix=""):
             else DE_CROSSREFERENCE_GRAPH_PATH
         )
 
-        graph_path = +(f"/{graph_type}/{snapshot}.gpickle.gz")
+        graph_path += f"/{graph_type}/{snapshot}.gpickle.gz"
         G = nx.read_gpickle(graph_path)
 
     else:
