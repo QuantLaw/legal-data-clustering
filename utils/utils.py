@@ -17,6 +17,9 @@ def filename_for_pp_config(
     number_of_modules=None,
     method=None,
 ):
+    if method == "louvain":
+        number_of_modules = None
+
     filename = f"{snapshot}_{pp_ratio}_{pp_decay}_{pp_merge}"
     if pp_co_occurrence:
         filename += f"_o{pp_co_occurrence}_t-{pp_co_occurrence_type}"

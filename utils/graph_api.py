@@ -215,7 +215,12 @@ def quotient_decision_graph(G, merge_decisions, merge_statutes):
 
 
 def quotient_graph(
-    G, node_attribute, edge_types=["reference"], self_loops=False, root_level=-1
+    G,
+    node_attribute,
+    edge_types=["reference", "cooccurrence"],
+    self_loops=False,
+    root_level=-1,
+    aggregation_attr=("chars_n", "chars_nowhites", "tokens_n", "tokens_unique"),
 ):
     """
     Generate the quotient graph with all nodes sharing the same node_attribute condensed into a single node.
@@ -271,4 +276,15 @@ def quotient_graph(
 
     nG.graph["name"] = f'{G.graph["name"]}_quotient_graph_{node_attribute}'
 
+    if aggregation_attr:
+        aggregate_attr_in_quotient_graph(nG, G, new_nodes, aggregation_attr)
+
     return nG
+
+
+def aggregate_attr_in_quotient_graph(nG, G, new_nodes, aggregation_attr):
+    for attr in aggregation_attr:
+        attr_data = nx.get_node_attributes(G, attr)
+        for community_id, nodes in new_nodes.items():
+            aggregated_value = sum(attr_data.get(n) for n in nodes)
+            nG.nodes[community_id][attr] = aggregated_value
