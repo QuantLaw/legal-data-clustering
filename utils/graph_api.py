@@ -100,7 +100,7 @@ def get_clustering_result(cluster_path, dataset, graph_type, path_prefix=""):
         path_prefix
         + (US_CD_CLUSTER_PATH if dataset.lower() == "us" else DE_CD_CLUSTER_PATH)
         + "/"
-        + cluster_path
+        + os.path.split(cluster_path)[-1]
     )
     clustering.graph = G
 

@@ -1,8 +1,8 @@
 #!/bin/bash
 
-## Complexity paper
-python . de preprocess cluster --number-of-modules 100 --consensus 1000
-python . us preprocess cluster --number-of-modules 100 --consensus 1000
+# Complexity paper
+python . de preprocess cluster cluster_evolution_graph --number-of-modules 100 --consensus 1000
+python . us preprocess cluster cluster_evolution_graph --number-of-modules 100 --consensus 1000
 
 # Thesis
 
@@ -15,3 +15,9 @@ python . de preprocess cluster --clustering-method louvain --seed 1 --pp-co-occu
 
 # Verlgeich des Detailgrads
 python . de preprocess cluster --clustering-method louvain --seed 1 --pp-ratio 5 --pp-merge 0 --pp-co-occurrence -2 --pp-co-occurrence-type paragraph --snapshot 2018-01-01 --markov-time 1
+
+# Zeitlich mittel
+python . de preprocess cluster cluster_evolution_graph --clustering-method louvain --consensus 1000  --pp-co-occurrence -2 --pp-co-occurrence-type paragraph --markov-time 0.5
+
+# Zeitlich grob
+python . de preprocess cluster cluster_evolution_graph --clustering-method louvain --seed 1 --pp-co-occurrence -2 --pp-co-occurrence-type paragraph --consensus 1000

@@ -224,8 +224,6 @@ if __name__ == "__main__":
             source_folder = DE_CROSSREFERENCE_GRAPH_PATH
             target_folder = DE_CD_PREPROCESSED_GRAPH_PATH
             decision_network_path = DE_DECISIONS_NETWORK
-            if any(v != 0 for v in cluster_mapping_configs["pp_co_occurrences"]):
-                get_decision_network(decision_network_path)
         elif dataset == "us":
             source_folder = US_CROSSREFERENCE_GRAPH_PATH
             target_folder = US_CD_PREPROCESSED_GRAPH_PATH
@@ -234,12 +232,21 @@ if __name__ == "__main__":
         items = cd_preprocessing_prepare(
             overwrite, snapshots, cluster_mapping_configs, source_folder, target_folder
         )
+
+        if (
+            dataset == "de"
+            and items
+            and any(v != 0 for v in cluster_mapping_configs["pp_co_occurrences"])
+        ):
+            get_decision_network(decision_network_path)
+
         logs = process_items(
             items,
             [],
             action_method=cd_preprocessing,
             use_multiprocessing=use_multiprocessing,
             args=(source_folder, target_folder, decision_network_path),
+            processes=4,
         )
 
     if "cluster" in steps:

@@ -64,7 +64,7 @@ def cd_cluster_evolution_graph_prepare(
         configs = [
             config
             for config in configs
-            if filename_for_pp_config(snapshot="all", **config, file_ext=".graphml")
+            if filename_for_pp_config(snapshot="all", **config, file_ext=".gpickle.gz")
             not in existing_files
         ]
 
@@ -157,10 +157,10 @@ def cd_cluster_evolution_graph(
         prev_clustering = clustering
         prev_snapshot = snapshot
 
-    nx.write_graphml(
+    nx.write_gpickle(
         B,
         f"{target_folder}/"
-        f'{filename_for_pp_config(snapshot="all", **config, file_ext=".graphml")}',
+        f'{filename_for_pp_config(snapshot="all", **config, file_ext=".gpickle.gz")}',
     )
 
 
