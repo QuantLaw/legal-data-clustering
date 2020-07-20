@@ -12,7 +12,6 @@ jobs:
     - uses: actions/checkout@master
     - uses: actions/checkout@master
       with:
-        token: ''
         repository: 'git@github.com:QuantLaw/legal-data-preprocessing.git'
         path: 'legal_data_preprocessing'
         ssh-key: ${{ secrets.SSHKEY }}
