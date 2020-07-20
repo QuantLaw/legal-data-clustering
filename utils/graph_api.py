@@ -238,8 +238,12 @@ def quotient_graph(
 
     # remove the root if root_level is given
     if root_level is not None:
-        root = [x for x in G.nodes() if G.nodes[x]["level"] == root_level][0]
-        unique_values.remove(root)
+        roots = [x for x in G.nodes() if G.nodes[x]["level"] == root_level]
+        if roots:
+            root = roots[0]
+            unique_values.remove(root)
+        else:
+            root = None
     else:
         root = None
 
