@@ -10,14 +10,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
-    - uses: webfactory/ssh-agent@master
-      with:
-        ssh-private-key: ${{ secrets.SSHKEY }}
     - uses: actions/checkout@master
       with:
         token: ''
         repository: 'git@github.com:QuantLaw/legal-data-preprocessing.git'
         path: 'legal_data_preprocessing'
+        ssh-key: ${{ secrets.SSHKEY }}
 
     - name: Setup Python
       uses: actions/setup-python@master
