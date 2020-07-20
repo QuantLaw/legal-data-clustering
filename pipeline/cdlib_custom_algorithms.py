@@ -11,10 +11,11 @@ from community import generate_dendrogram, partition_at_level
 def infomap(
     g,
     seed=None,
-    options="--inner-parallelization --silent -d",
+    options="--inner-parallelization --silent",
     markov_time=1.0,
     number_of_modules=None,
     return_tree=False,
+    directed=False,
 ):
     """
     Infomap is based on ideas of information theory.
@@ -53,6 +54,9 @@ def infomap(
         options_compiled += f" --preferred-number-of-modules {number_of_modules}"
     if seed is not None:
         options_compiled += f" --seed {seed}"
+
+    if directed:
+        options_compiled += " -d"
 
     # try:
     # with pipes() as (stdout, stderr):

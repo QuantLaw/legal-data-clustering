@@ -116,13 +116,15 @@ def cd_cluster(config, source_folder, target_folder):
 
 
 def cluster(g, config, return_tree, seed=None):
-    if config["method"].lower() == "infomap":
+    if config["method"].lower() in ["infomap", "infomap-directed"]:
+        directed = bool(config["method"].lower() == "infomap-directed")
         return cdlib_custom_algorithms.infomap(
             g,
             markov_time=config["markov_time"],
             seed=seed or config.get("seed"),
             number_of_modules=config.get("number_of_modules"),
             return_tree=return_tree,
+            directed=directed,
         )
     elif config["method"].lower() == "louvain":
         return cdlib_custom_algorithms.louvain(
@@ -137,7 +139,7 @@ def cluster(g, config, return_tree, seed=None):
 
 
 def compile_source_graph(g, method):
-    if method.lower() == "infomap":
+    if method.lower() in ["infomap", "infomap-directed"]:
         return g
     elif method.lower() == "louvain":
         h = nx.Graph()
