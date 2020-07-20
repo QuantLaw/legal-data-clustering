@@ -220,7 +220,7 @@ def quotient_graph(
     edge_types=["reference", "cooccurrence"],
     self_loops=False,
     root_level=-1,
-    aggregation_attr=("chars_n", "chars_nowhites", "tokens_n", "tokens_unique"),
+    aggregation_attrs=("chars_n", "chars_nowhites", "tokens_n", "tokens_unique"),
 ):
     """
     Generate the quotient graph with all nodes sharing the same node_attribute condensed into a single node.
@@ -280,14 +280,22 @@ def quotient_graph(
 
     nG.graph["name"] = f'{G.graph["name"]}_quotient_graph_{node_attribute}'
 
-    if aggregation_attr:
-        aggregate_attr_in_quotient_graph(nG, G, new_nodes, aggregation_attr)
+    if aggregation_attrs:
+        aggregate_attr_in_quotient_graph(nG, G, new_nodes, aggregation_attrs)
 
     return nG
 
 
-def aggregate_attr_in_quotient_graph(nG, G, new_nodes, aggregation_attr):
-    for attr in aggregation_attr:
+def aggregate_attr_in_quotient_graph(nG, G, new_nodes, aggregation_attrs):
+    """
+    Sums attributes of nodes in an original graph per community and adds the sum to the nodes in a quotient graph.
+    :param nG: Quotient graph
+    :param G: Original graph
+    :param new_nodes: Mapping of nodes in the quotient graph to an iterable of nodes in the original graph
+        that are represented by the node in the quotient graph.
+    :param aggregation_attrs: attributes to aggregate
+    """
+    for attr in aggregation_attrs:
         attr_data = nx.get_node_attributes(G, attr)
         for community_id, nodes in new_nodes.items():
             aggregated_value = sum(attr_data.get(n) for n in nodes)
