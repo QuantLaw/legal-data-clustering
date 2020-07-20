@@ -1,5 +1,4 @@
 import unittest
-
 import networkx as nx
 
 from utils.graph_api import aggregate_attr_in_quotient_graph
