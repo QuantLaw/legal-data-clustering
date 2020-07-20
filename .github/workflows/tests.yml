@@ -12,7 +12,7 @@ jobs:
     - uses: actions/checkout@master
     - uses: webfactory/ssh-agent@master
       with:
-        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+        ssh-private-key: ${{ secrets.SSHKEY }}
     - uses: actions/checkout@master
       with:
         token: ''
