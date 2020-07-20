@@ -9,13 +9,10 @@ jobs:
       PYTHON: '3.7'
     runs-on: ubuntu-latest
     steps:
-    - name: Fix up git URLs
-      run: |
-        git config --global --add url."https://${{ secrets.GITHUB_SECRET }}:x-oauth-basic@github.com/".insteadOf "https://github.com/"
-        git config --global --add url."https://${{ secrets.GITHUB_SECRET }}:x-oauth-basic@github.com/".insteadOf "git@github.com:"
     - uses: actions/checkout@master
       with:
         submodules: true
+        ssh-key: ${{ github.SSHKEY }}
     - name: Setup Python
       uses: actions/setup-python@master
       with:
