@@ -59,7 +59,7 @@ def cd_cluster_evolution_graph_prepare(
             if mapping_file not in mapping_files:
                 raise Exception(f"mapping {mapping_file} is missing")
 
-    existing_files = set(list_dir(target_folder, ".json"))
+    existing_files = set(list_dir(target_folder, ".gpickle.gz"))
     if not overwrite:
         configs = [
             config
