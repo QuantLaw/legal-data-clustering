@@ -27,13 +27,13 @@ python . de preprocess cluster cluster_evolution_graph --number-of-modules 100 -
 python . us preprocess cluster cluster_evolution_graph --number-of-modules 100 --consensus 1000 --clustering-method infomap infomap-directed
 
 # Temp
-python . us preprocess cluster cluster_evolution_graph --number-of-modules $(python -c "print(*[x for x in range(0, 200, 50)])") --consensus 1000 --clustering-method infomap
-python . de preprocess cluster cluster_evolution_graph --number-of-modules $(python -c "print(*[x for x in range(0, 200, 50)])") --consensus 1000 --clustering-method infomap
+python . us preprocess cluster cluster_evolution_graph --number-of-modules $(python -c "print(*[x for x in range(0, 200+1, 50)])") --consensus 1000 --clustering-method infomap
+python . de preprocess cluster cluster_evolution_graph --number-of-modules $(python -c "print(*[x for x in range(0, 200+1, 50)])") --consensus 1000 --clustering-method infomap
 
 # Temp
-python . us preprocess cluster cluster_evolution_graph --number-of-modules $(python -c "print(*[x for x in range(0, 200, 10)])") --consensus 1000 --clustering-method infomap
-python . de preprocess cluster cluster_evolution_graph --number-of-modules $(python -c "print(*[x for x in range(0, 200, 10)])") --consensus 1000 --clustering-method infomap
+python . us preprocess cluster cluster_evolution_graph --number-of-modules $(python -c "print(*[x for x in range(0, 100+1, 10)])") --consensus 1000 --clustering-method infomap
+python . de preprocess cluster cluster_evolution_graph --number-of-modules $(python -c "print(*[x for x in range(0, 100+1, 10)])") --consensus 1000 --clustering-method infomap
 
 # Stability analysis
-python . us preprocess cluster cluster_evolution_graph --number-of-modules $(python -c "print(*[x for x in range(0, 200, 10)])" --consensus 1000 --clustering-method infomap infomap-directed
-python . de preprocess cluster cluster_evolution_graph --number-of-modules $(python -c "print(*[x for x in range(0, 200, 10)])" --consensus 1000 --clustering-method infomap infomap-directed
+python . us preprocess cluster cluster_evolution_graph --number-of-modules $(python -c "print(*[x for x in range(0, 100+1, 10)])" --consensus 1000 --clustering-method infomap infomap-directed
+python . de preprocess cluster cluster_evolution_graph --number-of-modules $(python -c "print(*[x for x in range(0, 100+1, 10)])" --consensus 1000 --clustering-method infomap infomap-directed

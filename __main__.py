@@ -313,4 +313,5 @@ if __name__ == "__main__":
             action_method=cd_cluster_evolution_graph,
             use_multiprocessing=use_multiprocessing,
             args=(source_folder, mapping_folder, target_folder, dataset),
+            processes=2,
         )
