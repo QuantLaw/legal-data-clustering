@@ -59,14 +59,32 @@ def cd_cluster_evolution_mappings(item, source_folder, target_folder, dataset):
 
     G = nx.read_gpickle(subseqitems_path)
     hierarchy_G = hierarchy_graph(G)
-    subseqitems_degrees = hierarchy_G.out_degree()
-    leaves = [n for n, degree in subseqitems_degrees if degree == 0]
+    hierarchy_G_degrees = dict(hierarchy_G.out_degree())
+
+    leaves = [n for n, degree in hierarchy_G_degrees.items() if degree == 0]
 
     merged_nodes = sorted(merged_nodes)
+    merged_nodes_leaves = [
+        n
+        for n in merged_nodes
+        if not any(successor in merged_nodes for successor in hierarchy_G.successors(n))
+    ]
+    merged_nodes_descendants = {
+        descendant
+        for n in merged_nodes_leaves
+        for descendant in nx.descendants(hierarchy_G, n)
+    }
     subseqitems_mapping = {n: list() for n in merged_nodes}
     for leaf in leaves:
-        parent_node = find_lt(merged_nodes, leaf)
-        subseqitems_mapping[parent_node].append(leaf)
+        if leaf in merged_nodes_descendants:
+            parent_node = find_lt(merged_nodes, leaf)
+            subseqitems_mapping[parent_node].append(leaf)
+            assert parent_node in nx.ancestors(hierarchy_G, leaf), (
+                parent_node,
+                leaf,
+                nx.ancestors(hierarchy_G, leaf),
+                set(nx.ancestors(hierarchy_G, leaf)) & merged_nodes_descendants,
+            )
 
     prepared_data = dict(
         subseqitems_mapping=subseqitems_mapping,
