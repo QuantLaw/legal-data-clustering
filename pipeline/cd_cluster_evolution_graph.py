@@ -1,6 +1,10 @@
 import json
+import os
+import pickle
+from collections import Counter, defaultdict
 
 import networkx as nx
+from cdlib import readwrite
 
 from legal_data_preprocessing.utils.common import (
     ensure_exists,
@@ -17,7 +21,12 @@ from utils.utils import filename_for_pp_config
 
 
 def cd_cluster_evolution_graph_prepare(
-    overwrite, cluster_mapping_configs, source_folder, mapping_folder, target_folder
+    overwrite,
+    cluster_mapping_configs,
+    source_folder,
+    snaphot_mapping_folder,
+    subseqitem_mapping_folder,
+    target_folder,
 ):
     ensure_exists(target_folder)
 
@@ -53,9 +62,15 @@ def cd_cluster_evolution_graph_prepare(
             config, source_folder
         )
 
-        mapping_files = list_dir(mapping_folder, ".json")
+        mapping_files = list_dir(snaphot_mapping_folder, ".json")
         for snapshot1, snapshot2 in zip(snapshots[:-1], snapshots[1:]):
             mapping_file = f"{snapshot1}_{snapshot2}.json"
+            if mapping_file not in mapping_files:
+                raise Exception(f"mapping {mapping_file} is missing")
+
+        mapping_files = list_dir(subseqitem_mapping_folder, ".pickle")
+        for snapshot in snapshots:
+            mapping_file = f'{snapshot}_{config["pp_merge"]}.pickle'
             if mapping_file not in mapping_files:
                 raise Exception(f"mapping {mapping_file} is missing")
 
@@ -72,7 +87,12 @@ def cd_cluster_evolution_graph_prepare(
 
 
 def cd_cluster_evolution_graph(
-    config, source_folder, mapping_folder, target_folder, dataset
+    config,
+    source_folder,
+    snaphot_mapping_folder,
+    subseqitem_mapping_folder,
+    target_folder,
+    dataset,
 ):
     config_clustering_files, snapshots = get_config_clustering_files(
         config, source_folder
@@ -84,21 +104,32 @@ def cd_cluster_evolution_graph(
 
     for config_clustering_file, snapshot in zip(config_clustering_files, snapshots):
         # Add nodes to graph
-        clustering = get_clustering_result(
-            f"{source_folder}/{config_clustering_file}",
-            dataset,
-            graph_type="subseqitems",
-        )
-        add_community_to_graph(clustering)
 
-        # TODO integrate more stats
-        counters_dict = get_community_law_name_counters(clustering, "seqitems")
+        clustering = readwrite.read_community_json(
+            os.path.join(source_folder, config_clustering_file)
+        )
+
+        with open(
+            os.path.join(
+                subseqitem_mapping_folder, f'{snapshot}_{config["pp_merge"]}.pickle'
+            ),
+            "rb",
+        ) as f:
+            preprocessed_mappings = pickle.load(f)
+
+        counters_dict = get_cluster_law_names_counting_seqitems(
+            preprocessed_mappings, clustering.communities
+        )
         most_common_dict = {
             k: ",".join([f"{elem_k},{count}" for elem_k, count in v.most_common()])
             for k, v in counters_dict.items()
         }
-        chars_n_dict = get_community_sizes(clustering, "chars_n")
-        tokens_n_dict = get_community_sizes(clustering, "tokens_n")
+        chars_n_dict = get_community_sizes(
+            clustering.communities, preprocessed_mappings["chars_n"]
+        )
+        tokens_n_dict = get_community_sizes(
+            clustering.communities, preprocessed_mappings["tokens_n"]
+        )
 
         for community_key in get_community_ids(clustering):
             B.add_node(
@@ -109,59 +140,79 @@ def cd_cluster_evolution_graph(
                 law_names=most_common_dict[community_key],
             )
 
+        communities_rolled_down = [
+            [
+                n
+                for rolled_up_node in community_nodes
+                for n in preprocessed_mappings["subseqitems_mapping"][rolled_up_node]
+            ]
+            for community_nodes in clustering.communities
+        ]
+
+        community_id_for_rolled_down = {
+            n: community_id
+            for community_id, nodes in enumerate(communities_rolled_down)
+            for n in nodes
+        }
+
         if not first:
 
-            # Add edges
-            with open(f"{mapping_folder}/{prev_snapshot}_{snapshot}.json") as f:
+            with open(f"{snaphot_mapping_folder}/{prev_snapshot}_{snapshot}.json") as f:
                 mapping = json.load(f)
 
-            # Get nodes with cluster membership
-            prev_orig_communities = get_leaves_with_communities(prev_clustering.graph)
-            prev_mapped_communities = map_dict_keys(prev_orig_communities, mapping)
-            print("prev_mapped_communities", len(prev_mapped_communities))
-            orig_communities = get_leaves_with_communities(clustering.graph)
-            print("orig_communities", len(orig_communities))
-
-            intersecting_nodes = set(prev_mapped_communities.keys()).intersection(
-                set(orig_communities.keys())
-            )
-
-            # print(sorted({k for k in prev_mapped_communities.keys() if k not in orig_communities.keys()})[:1000])
-            if not len(prev_mapped_communities) == len(intersecting_nodes):
-                print(
-                    f"WARNING: prev_mapped_communities and intersecting_nodes do not match: \n"
-                    f"{len(prev_mapped_communities)} != {len(intersecting_nodes)}"
-                )
-            # TODO replace the warning above (starting from 'if') with this assert and
-            #  make sure that prev_mapped_communities matches intersecting_nodes
-            # assert len(prev_mapped_communities) == len(
-            #     intersecting_nodes
-            # ), f"{len(prev_mapped_communities)} != {len(intersecting_nodes)}"
-
             # draw edges
-            for node in intersecting_nodes:
-                prev_community = f"{prev_snapshot}_{prev_mapped_communities[node][0]}"
-                community = f"{snapshot}_{orig_communities[node][0]}"
-                if not B.has_edge(prev_community, community):
-                    B.add_edge(prev_community, community, chars_n=0, tokens_n=0)
+            edges_tokens_n = defaultdict(int)
+            edges_charns_n = defaultdict(int)
+            for prev_leaf, leaf in mapping.items():
+                try:
+                    prev_community_id = prev_community_id_for_rolled_down[prev_leaf]
+                except KeyError as err:
+                    report_mapping_error(err, prev_preprocessed_mappings["tokens_n"])
+                    continue
 
-                B.edges[prev_community, community]["chars_n"] += clustering.graph.nodes[
-                    node
-                ]["chars_n"]
-                B.edges[prev_community, community][
-                    "tokens_n"
-                ] += clustering.graph.nodes[node]["tokens_n"]
-                # B.edges[prev_community, community][f"{graph_type}_n"] += 1
+                try:
+                    community_id = community_id_for_rolled_down[leaf]
+                except KeyError as err:
+                    report_mapping_error(err, preprocessed_mappings["tokens_n"])
+                    continue
+
+                prev_community_name = f"{prev_snapshot}_{prev_community_id}"
+                community_name = f"{snapshot}_{community_id}"
+                edge = (prev_community_name, community_name)
+
+                # Use the tokens_n and chars_n values of the later year
+                edges_tokens_n[edge] += preprocessed_mappings["tokens_n"][leaf]
+                edges_charns_n[edge] += preprocessed_mappings["chars_n"][leaf]
+
+            B.add_edges_from(edges_tokens_n.keys())
+            nx.set_edge_attributes(B, edges_tokens_n, "tokens_n")
+            nx.set_edge_attributes(B, edges_charns_n, "chars_n")
 
         first = False
-        prev_clustering = clustering
         prev_snapshot = snapshot
+        prev_community_id_for_rolled_down = community_id_for_rolled_down
+        prev_preprocessed_mappings = preprocessed_mappings
 
     nx.write_gpickle(
         B,
         f"{target_folder}/"
         f'{filename_for_pp_config(snapshot="all", **config, file_ext=".gpickle.gz")}',
     )
+
+
+def get_cluster_law_names_counting_seqitems(preprocessed_mappings, communities):
+    counters = dict()
+    for community_id, community_nodes in enumerate(communities):
+        counters[community_id] = Counter(
+            [
+                "_".join(community_node.split("_")[:-1])
+                for community_node in community_nodes
+                for _ in range(
+                    preprocessed_mappings["seqitem_counts"].get(community_node, 0)
+                )
+            ]
+        )
+    return counters
 
 
 def get_config_clustering_files(config, source_folder):
@@ -185,14 +236,15 @@ def get_config_clustering_files(config, source_folder):
     return config_clustering_files, snapshots
 
 
-def map_dict_keys(source_dict, mapping):
-    return {mapping[k]: v for k, v in source_dict.items() if k in mapping}
-
-
-def get_community_sizes(clustering, size_attribute="chars_n"):
+def get_community_sizes(communities, node_sizes):
     community_sizes = dict()
-    for community_id, nodes in enumerate(clustering.communities):
-        community_sizes[community_id] = sum(
-            [clustering.graph.nodes[n][size_attribute] for n in nodes]
-        )
+    for community_id, nodes in enumerate(communities):
+        community_sizes[community_id] = sum([node_sizes[n] for n in nodes])
     return community_sizes
+
+
+def report_mapping_error(err, tokens_n_dict):
+    print(err.args[0])
+    err_tokens_n = tokens_n_dict[err.args[0]]
+    if err_tokens_n:
+        print(err.args[0], "not found and has", err_tokens_n, "tokens")

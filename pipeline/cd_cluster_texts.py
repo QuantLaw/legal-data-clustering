@@ -35,7 +35,7 @@ def cd_cluster_texts_prepare(
         for consensus in pp_configs["consensus"]
         for seed in pp_configs["seeds"]
         for number_of_modules in pp_configs["numbers_of_modules"]
-        for method in pp_configs["method"]
+        for method in pp_configs["methods"]
     ]
 
     # Check if source graphs exist
