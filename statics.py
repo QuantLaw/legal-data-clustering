@@ -13,6 +13,7 @@ US_CD_CLUSTER_EVOLUTION_MAPPINGS_PATH = (
     f"{US_TEMP_DATA_PATH}/121_cluster_evolution_mappings"
 )
 US_CD_CLUSTER_EVOLUTION_PATH = f"{US_DATA_PATH}/13_cluster_evolution_graph"
+US_CD_CLUSTER_INSPECTION_PATH = f"{US_DATA_PATH}/14_cluster_inspection"
 
 DE_TEMP_DATA_PATH = "temp/de"
 
@@ -23,3 +24,4 @@ DE_CD_CLUSTER_EVOLUTION_MAPPINGS_PATH = (
     f"{DE_TEMP_DATA_PATH}/121_cluster_evolution_mappings"
 )
 DE_CD_CLUSTER_EVOLUTION_PATH = f"{DE_DATA_PATH}/13_cluster_evolution_graph"
+DE_CD_CLUSTER_INSPECTION_PATH = f"{DE_DATA_PATH}/14_cluster_inspection"

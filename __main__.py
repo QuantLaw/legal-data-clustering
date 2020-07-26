@@ -21,6 +21,10 @@ from pipeline.cd_cluster_evolution_mappings import (
     cd_cluster_evolution_mappings,
     cd_cluster_evolution_mappings_prepare,
 )
+from pipeline.cd_cluster_inspection import (
+    cd_cluster_inspection_prepare,
+    cd_cluster_inspection,
+)
 from pipeline.cd_cluster_texts import cd_cluster_texts_prepare, cd_cluster_texts
 from pipeline.cd_preprocessing import (
     cd_preprocessing_prepare,
@@ -40,6 +44,8 @@ from statics import (
     US_CD_CLUSTER_EVOLUTION_PATH,
     DE_CD_CLUSTER_EVOLUTION_MAPPINGS_PATH,
     US_CD_CLUSTER_EVOLUTION_MAPPINGS_PATH,
+    DE_CD_CLUSTER_INSPECTION_PATH,
+    US_CD_CLUSTER_INSPECTION_PATH,
 )
 
 if __name__ == "__main__":
@@ -224,6 +230,7 @@ if __name__ == "__main__":
             "cluster_texts",
             "cluster_evolution_mappings",
             "cluster_evolution_graph",
+            "cluster_inspection",
         ]
 
     if "preprocess" in steps:
@@ -350,4 +357,23 @@ if __name__ == "__main__":
                 target_folder,
                 dataset,
             ),
+        )
+
+    if "cluster_inspection" in steps:
+        if dataset == "de":
+            source_folder = DE_CD_CLUSTER_PATH
+            target_folder = DE_CD_CLUSTER_INSPECTION_PATH
+        elif dataset == "us":
+            source_folder = US_CD_CLUSTER_PATH
+            target_folder = US_CD_CLUSTER_INSPECTION_PATH
+
+        items = cd_cluster_inspection_prepare(
+            overwrite, snapshots, cluster_mapping_configs, source_folder, target_folder
+        )
+        logs = process_items(
+            items,
+            [],
+            action_method=cd_cluster_inspection,
+            use_multiprocessing=use_multiprocessing,
+            args=(dataset, source_folder, target_folder),
         )
