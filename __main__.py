@@ -17,6 +17,10 @@ from pipeline.cd_cluster_evolution_graph import (
     cd_cluster_evolution_graph_prepare,
     cd_cluster_evolution_graph,
 )
+from pipeline.cd_cluster_evolution_mappings import (
+    cd_cluster_evolution_mappings,
+    cd_cluster_evolution_mappings_prepare,
+)
 from pipeline.cd_cluster_texts import cd_cluster_texts_prepare, cd_cluster_texts
 from pipeline.cd_preprocessing import (
     cd_preprocessing_prepare,
@@ -32,8 +36,10 @@ from statics import (
     US_CD_CLUSTER_PATH,
     DE_CD_CLUSTER_TEXTS_PATH,
     US_CD_CLUSTER_TEXTS_PATH,
-    DE_CD_CLUSTER_MAPPED_PATH,
-    US_CD_CLUSTER_MAPPED_PATH,
+    DE_CD_CLUSTER_EVOLUTION_PATH,
+    US_CD_CLUSTER_EVOLUTION_PATH,
+    DE_CD_CLUSTER_EVOLUTION_MAPPINGS_PATH,
+    US_CD_CLUSTER_EVOLUTION_MAPPINGS_PATH,
 )
 
 if __name__ == "__main__":
@@ -216,6 +222,7 @@ if __name__ == "__main__":
             "preprocess",
             "cluster",
             "cluster_texts",
+            "cluster_evolution_mappings",
             "cluster_evolution_graph",
         ]
 
@@ -289,29 +296,58 @@ if __name__ == "__main__":
             args=(dataset, source_folder, target_folder, reference_parsed_folder),
         )
 
+    if "cluster_evolution_mappings" in steps:
+
+        if dataset == "de":
+            source_folder = DE_CROSSREFERENCE_GRAPH_PATH
+            target_folder = DE_CD_CLUSTER_EVOLUTION_MAPPINGS_PATH
+        elif dataset == "us":
+            source_folder = US_CROSSREFERENCE_GRAPH_PATH
+            target_folder = US_CD_CLUSTER_EVOLUTION_MAPPINGS_PATH
+
+        items = cd_cluster_evolution_mappings_prepare(
+            overwrite, cluster_mapping_configs, source_folder, target_folder,
+        )
+        process_items(
+            items,
+            [],
+            action_method=cd_cluster_evolution_mappings,
+            use_multiprocessing=use_multiprocessing,
+            args=(source_folder, target_folder, dataset),
+            processes=2,
+        )
+
     if "cluster_evolution_graph" in steps:
 
         if dataset == "de":
             source_folder = DE_CD_CLUSTER_PATH
-            mapping_folder = DE_SNAPSHOT_MAPPING_EDGELIST_PATH + "/subseqitems"
-            target_folder = DE_CD_CLUSTER_MAPPED_PATH
+            snaphot_mapping_folder = DE_SNAPSHOT_MAPPING_EDGELIST_PATH + "/subseqitems"
+            subseqitem_mapping_folder = DE_CD_CLUSTER_EVOLUTION_MAPPINGS_PATH
+            target_folder = DE_CD_CLUSTER_EVOLUTION_PATH
         elif dataset == "us":
             source_folder = US_CD_CLUSTER_PATH
-            mapping_folder = US_SNAPSHOT_MAPPING_EDGELIST_PATH + "/subseqitems"
-            target_folder = US_CD_CLUSTER_MAPPED_PATH
+            snaphot_mapping_folder = US_SNAPSHOT_MAPPING_EDGELIST_PATH + "/subseqitems"
+            subseqitem_mapping_folder = US_CD_CLUSTER_EVOLUTION_MAPPINGS_PATH
+            target_folder = US_CD_CLUSTER_EVOLUTION_PATH
 
         items = cd_cluster_evolution_graph_prepare(
             overwrite,
             cluster_mapping_configs,
             source_folder,
-            mapping_folder,
+            snaphot_mapping_folder,
+            subseqitem_mapping_folder,
             target_folder,
         )
-        logs = process_items(
+        process_items(
             items,
             [],
             action_method=cd_cluster_evolution_graph,
             use_multiprocessing=use_multiprocessing,
-            args=(source_folder, mapping_folder, target_folder, dataset),
-            processes=2,
+            args=(
+                source_folder,
+                snaphot_mapping_folder,
+                subseqitem_mapping_folder,
+                target_folder,
+                dataset,
+            ),
         )
