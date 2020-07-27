@@ -244,7 +244,6 @@ def get_community_sizes(communities, node_sizes):
 
 
 def report_mapping_error(err, tokens_n_dict):
-    print(err.args[0])
     err_tokens_n = tokens_n_dict[err.args[0]]
     if err_tokens_n:
         print(err.args[0], "not found and has", err_tokens_n, "tokens")

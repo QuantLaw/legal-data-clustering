@@ -124,7 +124,6 @@ def cd_cluster_inspection(
 
     with open(f"{target_folder}/{source_filename_base}.htm", "w") as f:
         f.write(content)
-    pass
 
 
 def get_heading_path(G_hierarchy: nx.DiGraph, n):
