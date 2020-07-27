@@ -56,7 +56,7 @@ def cd_cluster_inspection_prepare(
         items = [
             item
             for item in items
-            if filename_for_pp_config(**item, file_ext="") not in existing_files
+            if filename_for_pp_config(**item, file_ext=".htm") not in existing_files
         ]
 
     return items
