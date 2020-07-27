@@ -3,7 +3,7 @@ import networkx as nx
 
 from legal_data_preprocessing.utils.common import ensure_exists, list_dir, create_soup
 from legal_data_preprocessing.utils.graph_api import hierarchy_graph
-from utils.graph_api import get_clustering_result
+from utils.graph_api import get_clustering_result, get_heading_path
 from utils.utils import filename_for_pp_config
 
 source_file_ext = ".json"
@@ -124,15 +124,3 @@ def cd_cluster_inspection(
 
     with open(f"{target_folder}/{source_filename_base}.htm", "w") as f:
         f.write(content)
-
-
-def get_heading_path(G_hierarchy: nx.DiGraph, n):
-    if n == "root":
-        return ""
-    predecessors = list(G_hierarchy.predecessors(n))
-    assert len(predecessors) <= 1
-    heading = G_hierarchy.nodes[n].get("heading", "-")
-    if predecessors and predecessors != ["root"]:
-        predecessor = predecessors[0]
-        heading = get_heading_path(G_hierarchy, predecessor) + " / " + heading
-    return heading

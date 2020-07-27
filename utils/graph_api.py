@@ -300,3 +300,43 @@ def aggregate_attr_in_quotient_graph(nG, G, new_nodes, aggregation_attrs):
         for community_id, nodes in new_nodes.items():
             aggregated_value = sum(attr_data.get(n) for n in nodes)
             nG.nodes[community_id][attr] = aggregated_value
+
+
+def cluster_familes(G, threshold):
+    H = filter_edges_for_cluster_families(G, threshold, "tokens_n")
+    components = list(nx.connected_components(H.to_undirected()))
+    components.sort(
+        key=lambda nodes_set: max([H.nodes[n]["tokens_n"] for n in nodes_set]),
+        reverse=True,
+    )
+    components = [
+        sorted(c, key=lambda n: H.nodes[n]["tokens_n"], reverse=True)
+        for c in components
+    ]
+    return components
+
+
+def filter_edges_for_cluster_families(G, threshold, attr):
+    edges_to_remove = [
+        (u, v)
+        for u, v, data in G.edges(data=True)
+        if (
+            data[attr] < G.nodes[u][attr] * threshold
+            or data[attr] < G.nodes[v][attr] * threshold
+        )
+    ]
+    H = G.copy()
+    H.remove_edges_from(edges_to_remove)
+    return H
+
+
+def get_heading_path(G_hierarchy: nx.DiGraph, n):
+    if n == "root":
+        return ""
+    predecessors = list(G_hierarchy.predecessors(n))
+    assert len(predecessors) <= 1
+    heading = G_hierarchy.nodes[n].get("heading", "-")
+    if predecessors and predecessors != ["root"]:
+        predecessor = predecessors[0]
+        heading = get_heading_path(G_hierarchy, predecessor) + " / " + heading
+    return heading

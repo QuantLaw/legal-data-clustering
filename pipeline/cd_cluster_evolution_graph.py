@@ -131,13 +131,21 @@ def cd_cluster_evolution_graph(
             clustering.communities, preprocessed_mappings["tokens_n"]
         )
 
-        for community_key in get_community_ids(clustering):
+        for community_key, community_nodes in enumerate(clustering.communities):
+            community_nodes_sorted = sorted(
+                community_nodes,
+                key=lambda n: preprocessed_mappings["tokens_n"][n],
+                reverse=True,
+            )
+            for n in community_nodes_sorted:
+                assert "," not in n
             B.add_node(
                 f"{snapshot}_{community_key}",
                 bipartite=snapshot,
                 chars_n=chars_n_dict[community_key],
                 tokens_n=tokens_n_dict[community_key],
                 law_names=most_common_dict[community_key],
+                nodes_contained=",".join(community_nodes_sorted),
             )
 
         communities_rolled_down = [

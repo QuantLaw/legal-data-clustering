@@ -1,4 +1,5 @@
 import argparse
+import os
 import re
 
 from legal_data_preprocessing.statics import (
@@ -16,6 +17,10 @@ from pipeline.cd_cluster import cd_cluster_prepare, cd_cluster
 from pipeline.cd_cluster_evolution_graph import (
     cd_cluster_evolution_graph_prepare,
     cd_cluster_evolution_graph,
+)
+from pipeline.cd_cluster_evolution_inspection import (
+    cd_cluster_evolution_inspection_prepare,
+    cd_cluster_evolution_inspection,
 )
 from pipeline.cd_cluster_evolution_mappings import (
     cd_cluster_evolution_mappings,
@@ -46,6 +51,8 @@ from statics import (
     US_CD_CLUSTER_EVOLUTION_MAPPINGS_PATH,
     DE_CD_CLUSTER_INSPECTION_PATH,
     US_CD_CLUSTER_INSPECTION_PATH,
+    DE_CD_CLUSTER_EVOLUTION_INSPECTION_PATH,
+    US_CD_CLUSTER_EVOLUTION_INSPECTION_PATH,
 )
 
 if __name__ == "__main__":
@@ -377,3 +384,34 @@ if __name__ == "__main__":
             use_multiprocessing=use_multiprocessing,
             args=(dataset, source_folder, target_folder),
         )
+
+    if "cluster_evolution_inspection" in steps:
+        if dataset == "de":
+            source_folder = DE_CD_CLUSTER_EVOLUTION_PATH
+            crossreference_graph_folder = os.path.join(
+                DE_CROSSREFERENCE_GRAPH_PATH, "seqitems"
+            )
+            target_folder = DE_CD_CLUSTER_EVOLUTION_INSPECTION_PATH
+        elif dataset == "us":
+            source_folder = US_CD_CLUSTER_EVOLUTION_PATH
+            crossreference_graph_folder = os.path.join(
+                US_CROSSREFERENCE_GRAPH_PATH, "seqitems"
+            )
+            target_folder = US_CD_CLUSTER_EVOLUTION_INSPECTION_PATH
+
+        items = cd_cluster_evolution_inspection_prepare(
+            overwrite,
+            cluster_mapping_configs,
+            source_folder,
+            crossreference_graph_folder,
+            target_folder,
+        )
+        logs = process_items(
+            items,
+            [],
+            action_method=cd_cluster_evolution_inspection,
+            use_multiprocessing=use_multiprocessing,
+            args=(dataset, source_folder, target_folder),
+        )
+        global cd_cluster_evolution_inspection_graphs
+        cd_cluster_evolution_inspection_graphs = None
