@@ -238,6 +238,7 @@ if __name__ == "__main__":
             "cluster_evolution_mappings",
             "cluster_evolution_graph",
             "cluster_inspection",
+            "cluster_evolution_inspection",
         ]
 
     if "preprocess" in steps:
