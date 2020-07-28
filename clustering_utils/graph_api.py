@@ -16,7 +16,7 @@ from statics import (
     US_CD_PREPROCESSED_GRAPH_PATH,
     DE_CD_PREPROCESSED_GRAPH_PATH,
 )
-from utils.utils import (
+from clustering_utils.utils import (
     get_config_from_filename,
     filename_for_pp_config,
     simplify_config_for_preprocessed_graph,

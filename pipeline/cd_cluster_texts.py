@@ -1,8 +1,8 @@
 import os
 
 from legal_data_preprocessing.utils.common import ensure_exists, list_dir, create_soup
-from utils.graph_api import get_clustering_result
-from utils.utils import filename_for_pp_config
+from clustering_utils.graph_api import get_clustering_result
+from clustering_utils.utils import filename_for_pp_config
 
 source_file_ext = ".json"
 

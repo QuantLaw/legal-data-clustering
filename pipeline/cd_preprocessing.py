@@ -12,9 +12,9 @@ from legal_data_preprocessing.utils.graph_api import (
     sequence_graph,
     decay_function,
 )
-from utils.graph_api import quotient_decision_graph
-from utils.nodes_merging import quotient_graph_with_merge
-from utils.utils import filename_for_pp_config
+from clustering_utils.graph_api import quotient_decision_graph
+from clustering_utils.nodes_merging import quotient_graph_with_merge
+from clustering_utils.utils import filename_for_pp_config
 
 target_file_ext = ".gpickle.gz"
 

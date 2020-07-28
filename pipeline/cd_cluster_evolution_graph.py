@@ -10,14 +10,14 @@ from legal_data_preprocessing.utils.common import (
     ensure_exists,
     list_dir,
 )
-from utils.graph_api import (
+from clustering_utils.graph_api import (
     get_clustering_result,
     get_community_ids,
     get_leaves_with_communities,
     get_community_law_name_counters,
     add_community_to_graph,
 )
-from utils.utils import filename_for_pp_config
+from clustering_utils.utils import filename_for_pp_config
 
 
 def cd_cluster_evolution_graph_prepare(

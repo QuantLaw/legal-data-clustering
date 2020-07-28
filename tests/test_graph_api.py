@@ -1,7 +1,7 @@
 import unittest
 import networkx as nx
 
-from utils.graph_api import aggregate_attr_in_quotient_graph
+from clustering_utils.graph_api import aggregate_attr_in_quotient_graph
 
 
 class TestGraphApi(unittest.TestCase):

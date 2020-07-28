@@ -10,7 +10,7 @@ from legal_data_preprocessing.utils.common import (
     list_dir,
 )
 from legal_data_preprocessing.utils.graph_api import hierarchy_graph
-from utils.nodes_merging import quotient_graph_with_merge
+from clustering_utils.nodes_merging import quotient_graph_with_merge
 
 
 def filename_for_mapping(mapping):
