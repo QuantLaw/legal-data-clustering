@@ -302,7 +302,7 @@ def aggregate_attr_in_quotient_graph(nG, G, new_nodes, aggregation_attrs):
             nG.nodes[community_id][attr] = aggregated_value
 
 
-def cluster_familes(G, threshold):
+def cluster_families(G, threshold):
     H = filter_edges_for_cluster_families(G, threshold, "tokens_n")
     components = list(nx.connected_components(H.to_undirected()))
     components.sort(
