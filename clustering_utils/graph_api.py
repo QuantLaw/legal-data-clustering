@@ -65,8 +65,6 @@ def get_clustering_result(cluster_path, dataset, graph_type, path_prefix=""):
     ::param graph_type: 'clustering' for the rolled up graph. Other options: subseqitems, seqitems
     """
 
-    # TODO LATER use statics for paths
-
     filename_base = os.path.splitext(os.path.split(cluster_path)[-1])[0]
     snapshot = filename_base.split("_")[0]
     dataset_folder = f"{dataset.upper()}-data"
@@ -156,8 +154,7 @@ def get_leaves_with_communities(G):
     return {
         node: G.nodes[node]["communities"]
         for node in get_leaves(G)
-        if "communities"
-        in G.nodes[node]  # TODO LATER subseqitems do not have a parent seqitem
+        if "communities" in G.nodes[node]
     }
 
 
@@ -306,7 +303,10 @@ def cluster_families(G, threshold):
     H = filter_edges_for_cluster_families(G, threshold, "tokens_n")
     components = list(nx.connected_components(H.to_undirected()))
     components.sort(
-        key=lambda nodes_set: (max([H.nodes[n]["tokens_n"] for n in nodes_set]), sorted(nodes_set)[-1]),
+        key=lambda nodes_set: (
+            max([H.nodes[n]["tokens_n"] for n in nodes_set]),
+            sorted(nodes_set)[-1],
+        ),
         reverse=True,
     )
     components = [

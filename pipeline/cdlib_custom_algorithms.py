@@ -79,19 +79,7 @@ def infomap(
                 module = node.path[:depth]
                 nm = name_map[nid]
                 coms_to_node[module].append(nm)
-
-        # TODO conditionally roll down the treee currently not used,
-        #  because 'preferred-number-of-modules' is the preferred method
         break
-        # if len(coms_to_node) >= 30:  # TODO param instead of fixed value
-        #     break
-        # else:
-        #     print(
-        #         f"At level {depth} of clustering only {len(coms_to_node)}. Consider one level more."
-        #     )
-    # except:
-    #     print(stdout.read())
-    #     raise
 
     coms_infomap = [list(c) for c in coms_to_node.values()]
 
