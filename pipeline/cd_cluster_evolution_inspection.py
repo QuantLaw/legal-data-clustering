@@ -75,7 +75,7 @@ def cd_cluster_evolution_inspection(config, dataset, source_folder, target_folde
     G = nx.read_gpickle(
         os.path.join(source_folder, source_filename_base + ".gpickle.gz")
     )
-    families = cluster_familes(G, 0.15)
+    families = cluster_families(G, 0.15)
 
     toc = "<h1>TOC</h1><table><th>Index</th><th>Leading cluster</th>\n"
     for idx, family_nodes in enumerate(families[:20]):
