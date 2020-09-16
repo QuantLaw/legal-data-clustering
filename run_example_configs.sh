@@ -14,6 +14,7 @@ python . de preprocess cluster --clustering-method louvain --seed 1 --pp-ratio 5
 
 # Zeitlich mittel / grob
 python . de preprocess cluster cluster_evolution_mappings cluster_evolution_graph cluster_inspection cluster_evolution_inspection --clustering-method louvain --consensus 1000  --pp-co-occurrence -2 --pp-co-occurrence-type paragraph --markov-time 1 0.5
+python . de preprocess cluster cluster_evolution_mappings cluster_evolution_graph cluster_inspection cluster_evolution_inspection --clustering-method louvain --consensus 1000  --pp-co-occurrence -1 --pp-co-occurrence-type paragraph --markov-time 1
 
 python . de preprocess cluster cluster_evolution_mappings cluster_evolution_graph cluster_inspection cluster_evolution_inspection --pp-co-occurrence -2 --pp-co-occurrence-type paragraph --number-of-modules 100 --consensus 1000 --clustering-method infomap-directed
 python . us preprocess cluster cluster_evolution_mappings cluster_evolution_graph cluster_inspection cluster_evolution_inspection --pp-co-occurrence -2 --pp-co-occurrence-type paragraph --number-of-modules 100 --consensus 1000 --clustering-method infomap-directed
