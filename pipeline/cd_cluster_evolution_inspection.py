@@ -49,12 +49,12 @@ def cd_cluster_evolution_inspection_prepare(
         for method in cluster_mapping_configs["methods"]
     ]
 
-    existing_files = set(list_dir(target_folder, ".gpickle.gz"))
+    existing_files = set(list_dir(target_folder, ".htm"))
     if not overwrite:
         configs = [
             config
             for config in configs
-            if filename_for_pp_config(snapshot="all", **config, file_ext=".gpickle.gz")
+            if filename_for_pp_config(snapshot="all", **config, file_ext=".htm")
             not in existing_files
         ]
     global cd_cluster_evolution_inspection_graphs
