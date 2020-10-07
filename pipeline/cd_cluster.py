@@ -6,10 +6,11 @@ import networkx as nx
 import numpy as np
 from cdlib import NodeClustering
 from cdlib.readwrite import write_community_json
+from quantlaw.utils.files import ensure_exists, list_dir
 
 from pipeline import cdlib_custom_algorithms
 from pipeline.cdlib_custom_algorithms import missings_nodes_as_additional_clusters
-from clustering_utils.utils import ensure_exists, list_dir, filename_for_pp_config
+from clustering_utils.utils import filename_for_pp_config
 
 source_file_ext = ".gpickle.gz"
 target_file_ext = ".json"

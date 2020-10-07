@@ -4,9 +4,9 @@ from bisect import bisect_left
 from collections import defaultdict
 
 import networkx as nx
+from quantlaw.utils.files import ensure_exists, list_dir
+from quantlaw.utils.networkx import hierarchy_graph
 
-from clustering_utils.utils import ensure_exists, list_dir
-from clustering_utils.graph_api import hierarchy_graph
 from clustering_utils.nodes_merging import quotient_graph_with_merge
 
 

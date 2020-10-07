@@ -1,6 +1,9 @@
 import os
 
-from clustering_utils.utils import ensure_exists, list_dir, create_soup, filename_for_pp_config
+from quantlaw.utils.files import ensure_exists, list_dir
+from quantlaw.utils.beautiful_soup import create_soup
+
+from clustering_utils.utils import filename_for_pp_config
 from clustering_utils.graph_api import get_clustering_result
 
 source_file_ext = ".json"

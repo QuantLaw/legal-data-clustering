@@ -5,8 +5,9 @@ from collections import Counter, defaultdict
 
 import networkx as nx
 from cdlib import readwrite
+from quantlaw.utils.files import ensure_exists, list_dir
 
-from clustering_utils.utils import ensure_exists, list_dir, filename_for_pp_config
+from clustering_utils.utils import filename_for_pp_config
 
 
 def cd_cluster_evolution_graph_prepare(

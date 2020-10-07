@@ -1,11 +1,10 @@
-# TODO remove this after checking everything is moved to quantlaw
-
 import itertools
 import os
 from collections import Counter, defaultdict
 
 import networkx as nx
 from cdlib import NodeClustering, readwrite
+from quantlaw.utils.networkx import hierarchy_graph
 
 from statics import (
     US_CROSSREFERENCE_GRAPH_PATH,
@@ -20,47 +19,6 @@ from clustering_utils.utils import (
     filename_for_pp_config,
     simplify_config_for_preprocessed_graph,
 )
-
-
-def induced_subgraph(G, filter_type, filter_attribute, filter_values):
-    """
-    Create a custom induced subgraph.
-    :param G: a NetworkX graph
-    :param filter_type: node|edge
-    :param filter_attribute: attribute to filter on
-    :param filter_values: attribute values to evaluate to True
-    """
-    G = nx.MultiDiGraph(G)
-    if filter_type == "node":
-        nodes = [
-            n for n in G.nodes() if G.nodes[n].get(filter_attribute) in filter_values
-        ]
-        sG = nx.induced_subgraph(G, nodes)
-    elif filter_type == "edge":
-        sG = nx.MultiDiGraph()
-        sG.add_nodes_from(G.nodes(data=True))
-        sG.add_edges_from(
-            [
-                (e[0], e[1], e[-1])
-                for e in G.edges(data=True)
-                if e[-1][filter_attribute] in filter_values
-            ]
-        )
-    else:
-        raise
-    sG.graph["name"] = "_".join(
-        [G.graph["name"], filter_type, filter_attribute, str(*filter_values)]
-    )
-    return sG
-
-
-def hierarchy_graph(G):
-    """
-    Remove reference edges from G.
-    Wrapper around induced_subgraph.
-    """
-    hG = induced_subgraph(G, "edge", "edge_type", ["containment"])
-    return hG
 
 
 def decay_function(key):

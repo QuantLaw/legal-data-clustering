@@ -1,13 +1,11 @@
 import os
 
 import networkx as nx
+from quantlaw.utils.files import ensure_exists, list_dir
+from quantlaw.utils.networkx import hierarchy_graph
 
-from clustering_utils.utils import ensure_exists, list_dir, filename_for_pp_config
-from clustering_utils.graph_api import (
-    hierarchy_graph,
-    cluster_families,
-    get_heading_path,
-)
+from clustering_utils.utils import filename_for_pp_config
+from clustering_utils.graph_api import cluster_families, get_heading_path
 
 source_file_ext = ".json"
 

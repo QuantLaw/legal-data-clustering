@@ -6,12 +6,13 @@ from collections import Counter
 import networkx as nx
 import pandas as pd
 
-from clustering_utils.utils import ensure_exists, list_dir
+from quantlaw.utils.files import ensure_exists, list_dir
+
 from clustering_utils.graph_api import (
     sequence_graph,
     decay_function,
+    quotient_decision_graph
 )
-from clustering_utils.graph_api import quotient_decision_graph
 from clustering_utils.nodes_merging import quotient_graph_with_merge
 from clustering_utils.utils import filename_for_pp_config
 

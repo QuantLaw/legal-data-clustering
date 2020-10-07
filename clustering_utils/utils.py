@@ -1,36 +1,6 @@
-import os
-import bs4
-
-#############
-# File system
-#############
-
-
-def ensure_exists(path):
-    if not os.path.exists(path):
-        os.makedirs(path)
-    return path
-
-
-def list_dir(path, type):
-    return [f for f in os.listdir(path) if f.endswith(type)]
-
-
-###############
-# BeautifulSoup
-###############
-
-
-def create_soup(path):
-    with open(path, encoding="utf8") as f:
-        return bs4.BeautifulSoup(f.read(), "lxml-xml")
-
-
 #####################
 # Community detection
 #####################
-
-
 def filename_for_pp_config(
     snapshot,
     pp_ratio,
