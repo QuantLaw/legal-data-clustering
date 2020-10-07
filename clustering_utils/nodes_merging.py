@@ -28,7 +28,6 @@ def quotient_graph_with_merge(
         if is_node_contracted(hG, node_id, merge_threshold, merge_attribute):
             # Add node to mapping to draw edges appropriately between contracted nodes
             # print(f"-", end="")
-
             merge_parent = get_merge_parent(
                 hG, node_id, merge_threshold, merge_attribute
             )
@@ -38,15 +37,6 @@ def quotient_graph_with_merge(
             # Add node to ne graph and add node to mapping for convenience
             nG.add_node(node_id, **node_attrs)
             nodes_mapping[node_id] = node_id
-
-        # parent = (
-        #     list(hG.predecessors(node_id))[0]
-        #     if list(hG.predecessors(node_id))
-        #     else None
-        # )
-        # print(
-        #     f" {node_id} < {parent} -- {hG.nodes[parent].get(merge_attribute) if parent else None}"
-        # )
 
     for e_source, e_target, e_data in G.edges(data=True):
         if e_data["edge_type"] in {"reference", "identity"}:

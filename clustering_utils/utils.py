@@ -1,6 +1,3 @@
-#####################
-# Community detection
-#####################
 def filename_for_pp_config(
     snapshot,
     pp_ratio,
