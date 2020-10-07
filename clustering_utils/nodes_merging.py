@@ -4,7 +4,7 @@
 import networkx as nx
 import regex
 
-from legal_data_preprocessing.utils.graph_api import hierarchy_graph
+from .graph_api import hierarchy_graph
 
 
 def quotient_graph_with_merge(

@@ -4,11 +4,10 @@ import re
 from collections import Counter
 
 import networkx as nx
-import regex
 import pandas as pd
 
-from legal_data_preprocessing.utils.common import ensure_exists, list_dir
-from legal_data_preprocessing.utils.graph_api import (
+from clustering_utils.utils import ensure_exists, list_dir
+from clustering_utils.graph_api import (
     sequence_graph,
     decay_function,
 )

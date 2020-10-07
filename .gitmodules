@@ -1,3 +1,0 @@
-[submodule "legal_data_preprocessing"]
-	path = legal_data_preprocessing
-	url = git@github.com:QuantLaw/legal-data-preprocessing.git

@@ -1,10 +1,5 @@
-import os
-import networkx as nx
-
-from legal_data_preprocessing.utils.common import ensure_exists, list_dir, create_soup
-from legal_data_preprocessing.utils.graph_api import hierarchy_graph
-from clustering_utils.graph_api import get_clustering_result, get_heading_path
-from clustering_utils.utils import filename_for_pp_config
+from clustering_utils.utils import ensure_exists, list_dir, filename_for_pp_config
+from clustering_utils.graph_api import hierarchy_graph, get_clustering_result, get_heading_path
 
 source_file_ext = ".json"
 
