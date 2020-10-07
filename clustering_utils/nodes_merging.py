@@ -141,6 +141,20 @@ def is_parent_too_big(G, node, merge_attribute, merge_threshold):
     return G.nodes[parent][merge_attribute] > merge_threshold
 
 
+def check_chapters(G, node):
+    """
+    Helper for is_node_contracted
+    """
+    if is_book_or_chapter(G, node):
+        return False
+    elif has_book_or_chapter_above(G, node):
+        return True
+    elif has_book_or_chapter_below(G, node):
+        return False
+    else:  # no chapter or book in branch
+        return True
+
+
 def is_node_contracted(G, node, merge_threshold=0, merge_attribute="chars_n"):
     """
     Determine whether a node should be in the quotient graph.
@@ -156,19 +170,9 @@ def is_node_contracted(G, node, merge_threshold=0, merge_attribute="chars_n"):
     """
     if is_root_node(G, node) or is_child_of_root_node(G, node):
         return False
-
     elif merge_threshold == -1:
-        if is_book_or_chapter(G, node):
-            return False
-        elif has_book_or_chapter_above(G, node):
-            return True
-        elif has_book_or_chapter_below(G, node):
-            return False
-        else:  # no chapter or book in branch
-            return True
-
+        return check_chapters(G, node)
     elif is_parent_too_big(G, node, merge_attribute, merge_threshold):
         return False
-
     else:
         return True
