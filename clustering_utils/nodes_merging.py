@@ -1,6 +1,3 @@
-###################
-# Merge graph nodes
-###################
 import networkx as nx
 import regex
 
@@ -123,8 +120,7 @@ def is_node_contracted(G, node, merge_threshold=0, merge_attribute="chars_n"):
             G.nodes[node]["heading"]
         ):
             return False
-
-        if [
+        elif [
             ancestor
             for ancestor in nx.ancestors(G, node)
             if ancestor != "root"
@@ -133,8 +129,7 @@ def is_node_contracted(G, node, merge_threshold=0, merge_attribute="chars_n"):
         ]:
             # Book or chapter above
             return True
-
-        if [
+        elif [
             predecessor
             for predecessor in nx.predecessor(G, node)
             if predecessor != "root"
@@ -149,7 +144,7 @@ def is_node_contracted(G, node, merge_threshold=0, merge_attribute="chars_n"):
 
     else:
 
-        # Is parent too "big" to be a leaf? In this implementation node and their siblings are connected is the parent,
+        # Is parent too "big" to be a leaf? In this implementation node and their siblings are connected if the parent
         # they are contracted in, is still below a certain threshold. It is also possible to contract all a node and its
         # siblings if one node is below a certain threshold but the parent would be above the threshold.
         if G.nodes[parent][merge_attribute] > merge_threshold:
