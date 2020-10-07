@@ -81,76 +81,94 @@ def get_merge_parent(G, node, merge_threshold=0, merge_attribute="chars_n"):
 chapter_buch_pattern = regex.compile(r"\w*\s*\bBuch\b|CHAPTER")
 
 
+def is_root_node(G, node):
+    """
+    Helper for is_node_contracted
+    """
+    return G.in_degree(node) == 0
+
+
+def is_child_of_root_node(G, node):
+    """
+    Helper for is_node_contracted
+    """
+    parent = list(G.predecessors(node))[0]
+    return G.in_degree(parent) == 0
+
+
+def is_book_or_chapter(G, node):
+    """
+    Helper for is_node_contracted
+    """
+    return "heading" in G.nodes[node] and chapter_buch_pattern.match(
+        G.nodes[node]["heading"]
+    )
+
+
+def has_book_or_chapter_above(G, node):
+    """
+    Helper for is_node_contracted
+    """
+    matching_ancestors = [
+        n for n in nx.ancestors(G, node)
+        if n != "root"
+        and "heading" in G.nodes[n]
+        and chapter_buch_pattern.match(G.nodes[n]["heading"])
+    ]
+    return bool(matching_ancestors)
+
+
+def has_book_or_chapter_below(G, node):
+    """
+    Helper for is_node_contracted
+    """
+    # nx.predecessor returns a dictionary of nodes on a path from node to all other nodes,
+    # i.e., the dictionary's keys are the descendants (possibly replaced by nx.descendants in the future)
+    matching_descendants = [
+            n for n in nx.predecessor(G, node)
+            if n != "root"
+            and "heading" in G.nodes[n]
+            and chapter_buch_pattern.match(G.nodes[n]["heading"])
+        ]
+    return bool(matching_descendants)
+
+
+def is_parent_too_big(G, node, merge_attribute, merge_threshold):
+    """
+    Helper for is_node_contracted
+    """
+    parent = list(G.predecessors(node))[0]
+    return G.nodes[parent][merge_attribute] > merge_threshold
+
+
 def is_node_contracted(G, node, merge_threshold=0, merge_attribute="chars_n"):
     """
-    Determines whether a node should be in the quotient graph
+    Determine whether a node should be in the quotient graph.
+    In this implementation, nodes and their siblings are contracted
+    if the parent they are contracted in is still below a certain threshold.
+    It would also be possible to contract a node and its siblings if one node is below a certain threshold
+    but the parent would be above the threshold.
     :param G: hierarchical graph
     :param node: current node name
     :param merge_threshold:
     :param merge_attribute:
     :return: boolean
     """
-    # Is a root node?
-    if G.in_degree(node) == 0:
-        # print(" root ", end="")
+    if is_root_node(G, node) or is_child_of_root_node(G, node):
         return False
 
-    parent = list(G.predecessors(node))[0]
+    elif merge_threshold == -1:
+        if is_book_or_chapter(G, node):
+            return False
+        elif has_book_or_chapter_above(G, node):
+            return True
+        elif has_book_or_chapter_below(G, node):
+            return False
+        else:  # no chapter or book in branch
+            return True
 
-    # Is child of a root node ?
-    if G.in_degree(parent) == 0:
-        # print(" root2 ", end="")
+    elif is_parent_too_big(G, node, merge_attribute, merge_threshold):
         return False
-
-    if merge_threshold == -1:
-        # DEBUG
-        # ancestors = [
-        #     (
-        #         ancestor,
-        #         G.nodes[ancestor]['heading'],
-        #         chapter_buch_pattern.match(G.nodes[ancestor]['heading']),
-        #         G.nodes[ancestor]['level']
-        #     )
-        #     for ancestor in nx.ancestors(G, node)
-        #     if ancestor != 'root'
-        # ]
-
-        # Is book or chapter
-        if "heading" in G.nodes[node] and chapter_buch_pattern.match(
-            G.nodes[node]["heading"]
-        ):
-            return False
-        elif [
-            ancestor
-            for ancestor in nx.ancestors(G, node)
-            if ancestor != "root"
-            and "heading" in G.nodes[ancestor]
-            and chapter_buch_pattern.match(G.nodes[ancestor]["heading"])
-        ]:
-            # Book or chapter above
-            return True
-        elif [
-            predecessor
-            for predecessor in nx.predecessor(G, node)
-            if predecessor != "root"
-            and "heading" in G.nodes[predecessor]
-            and chapter_buch_pattern.match(G.nodes[predecessor]["heading"])
-        ]:
-            # Book or chapter below
-            return False
-        else:
-            # No chapter or book in branch
-            return True
 
     else:
-
-        # Is parent too "big" to be a leaf? In this implementation node and their siblings are connected if the parent
-        # they are contracted in, is still below a certain threshold. It is also possible to contract all a node and its
-        # siblings if one node is below a certain threshold but the parent would be above the threshold.
-        if G.nodes[parent][merge_attribute] > merge_threshold:
-            # print(
-            #     f"merge_threshold of {node} < {parent} -- {G.nodes[parent][merge_attribute]}"
-            # )
-            return False
-
         return True
