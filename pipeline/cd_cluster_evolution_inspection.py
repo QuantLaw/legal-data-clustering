@@ -104,7 +104,7 @@ def cd_cluster_evolution_inspection(config, dataset, source_folder, target_folde
                 vertical-align:top;
             }
             body {
-                white-space: nowrap; 
+                white-space: nowrap;
                 font-family: Arial, Helvetica, sans-serif;
             }
             </style>
