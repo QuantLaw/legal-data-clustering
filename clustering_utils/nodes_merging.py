@@ -8,8 +8,10 @@ def quotient_graph_with_merge(
     G, self_loops=False, merge_threshold=0, merge_attribute="chars_n"
 ):
     """
-    Generate the quotient graph, recursively merging nodes if the merge result does not exceed merge threshold.
-    or merge threshold 0 this rolls up all node whose siblings are exclusively nodes with merge attribute value 0.
+    Generate the quotient graph, recursively merging nodes if the merge result
+    does not exceed merge threshold.
+    or merge threshold 0 this rolls up all node whose siblings are exclusively
+    nodes with merge attribute value 0.
     """
 
     hG = hierarchy_graph(G)
@@ -17,24 +19,22 @@ def quotient_graph_with_merge(
     # build a new MultiDiGraph
     nG = nx.MultiDiGraph()
 
-    # create a mapping especially for contracted nodes to draw edges between the remaining nodes appropriately
+    # create a mapping especially for contracted nodes
+    # to draw edges between the remaining nodes appropriately
     nodes_mapping = {}
 
     for node_id, node_attrs in G.nodes(data=True):
-        # Skip root node
-        # if hG.in_degree(node_id) == 0:
-        #     continue
 
         if is_node_contracted(hG, node_id, merge_threshold, merge_attribute):
-            # Add node to mapping to draw edges appropriately between contracted nodes
+            # Add node to mapping to draw correct edges between contracted nodes
             # print(f"-", end="")
             merge_parent = get_merge_parent(
                 hG, node_id, merge_threshold, merge_attribute
             )
             nodes_mapping[node_id] = merge_parent
         else:
+            # Add node to new graph and add node to mapping for convenience
             # print(f"+", end="")
-            # Add node to ne graph and add node to mapping for convenience
             nG.add_node(node_id, **node_attrs)
             nodes_mapping[node_id] = node_id
 
@@ -43,7 +43,7 @@ def quotient_graph_with_merge(
             # get source and target of edge in quotient graph
             source = nodes_mapping[e_source]
             target = nodes_mapping[e_target]
-            if self_loops or source != target:  # skip self loops, if deactivated
+            if self_loops or source != target:  # skip loops, if deactivated
                 nG.add_edge(source, target, **e_data)
         else:
             # add containment edge if target is still in quotient graph
@@ -100,7 +100,8 @@ def has_book_or_chapter_above(G, node):
     Helper for is_node_contracted
     """
     matching_ancestors = [
-        n for n in nx.ancestors(G, node)
+        n
+        for n in nx.ancestors(G, node)
         if n != "root"
         and "heading" in G.nodes[n]
         and chapter_buch_pattern.match(G.nodes[n]["heading"])
@@ -111,15 +112,18 @@ def has_book_or_chapter_above(G, node):
 def has_book_or_chapter_below(G, node):
     """
     Helper for is_node_contracted
+
+    Note that nx.predecessor returns a dictionary of nodes on a path from
+    node to all other nodes, i.e., the dictionary's keys are the descendants
+    (possibly replaced by nx.descendants in the future).
     """
-    # nx.predecessor returns a dictionary of nodes on a path from node to all other nodes,
-    # i.e., the dictionary's keys are the descendants (possibly replaced by nx.descendants in the future)
     matching_descendants = [
-            n for n in nx.predecessor(G, node)
-            if n != "root"
-            and "heading" in G.nodes[n]
-            and chapter_buch_pattern.match(G.nodes[n]["heading"])
-        ]
+        n
+        for n in nx.predecessor(G, node)
+        if n != "root"
+        and "heading" in G.nodes[n]
+        and chapter_buch_pattern.match(G.nodes[n]["heading"])
+    ]
     return bool(matching_descendants)
 
 
@@ -150,8 +154,8 @@ def is_node_contracted(G, node, merge_threshold=0, merge_attribute="chars_n"):
     Determine whether a node should be in the quotient graph.
     In this implementation, nodes and their siblings are contracted
     if the parent they are contracted in is still below a certain threshold.
-    It would also be possible to contract a node and its siblings if one node is below a certain threshold
-    but the parent would be above the threshold.
+    It would also be possible to contract a node and its siblings if one node
+    is below a certain threshold but the parent would be above the threshold.
     :param G: hierarchical graph
     :param node: current node name
     :param merge_threshold:

@@ -1,7 +1,7 @@
-from quantlaw.utils.files import ensure_exists, list_dir
-
+from clustering_utils.graph_api import (get_clustering_result,
+                                        get_heading_path, hierarchy_graph)
 from clustering_utils.utils import filename_for_pp_config
-from clustering_utils.graph_api import hierarchy_graph, get_clustering_result, get_heading_path
+from quantlaw.utils.files import ensure_exists, list_dir
 
 source_file_ext = ".json"
 
@@ -60,7 +60,10 @@ def cd_cluster_inspection_prepare(
 
 
 def cd_cluster_inspection(
-    config, dataset, source_folder, target_folder,
+    config,
+    dataset,
+    source_folder,
+    target_folder,
 ):
     source_filename_base = filename_for_pp_config(**config, file_ext="")
 
@@ -79,7 +82,7 @@ def cd_cluster_inspection(
             vertical-align:top;
         }
         body {
-            white-space: nowrap; 
+            white-space: nowrap;
             font-family: Arial, Helvetica, sans-serif;
         }
         </style>

@@ -4,10 +4,10 @@ from bisect import bisect_left
 from collections import defaultdict
 
 import networkx as nx
-from quantlaw.utils.files import ensure_exists, list_dir
-from quantlaw.utils.networkx import hierarchy_graph
 
 from clustering_utils.nodes_merging import quotient_graph_with_merge
+from quantlaw.utils.files import ensure_exists, list_dir
+from quantlaw.utils.networkx import hierarchy_graph
 
 
 def filename_for_mapping(mapping):
@@ -26,7 +26,10 @@ def cd_cluster_evolution_mappings_prepare(
 
     # get configs
     mappings = [
-        dict(pp_merge=pp_merge, snapshot=subseqitems_snapshot,)
+        dict(
+            pp_merge=pp_merge,
+            snapshot=subseqitems_snapshot,
+        )
         for pp_merge in cluster_mapping_configs["pp_merges"]
         for subseqitems_snapshot in subseqitems_snapshots
     ]
