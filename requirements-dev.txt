@@ -10,3 +10,4 @@ cdlib
 infomap
 coverage
 numpy
+quantlaw

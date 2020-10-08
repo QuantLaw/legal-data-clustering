@@ -2,7 +2,7 @@ import argparse
 import os
 import re
 
-from legal_data_preprocessing.statics import (
+from .statics import (
     ALL_YEARS,
     DE_CROSSREFERENCE_GRAPH_PATH,
     US_CROSSREFERENCE_GRAPH_PATH,
@@ -321,7 +321,10 @@ if __name__ == "__main__":
             target_folder = US_CD_CLUSTER_EVOLUTION_MAPPINGS_PATH
 
         items = cd_cluster_evolution_mappings_prepare(
-            overwrite, cluster_mapping_configs, source_folder, target_folder,
+            overwrite,
+            cluster_mapping_configs,
+            source_folder,
+            target_folder,
         )
         process_items(
             items,
