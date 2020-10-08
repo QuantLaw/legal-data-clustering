@@ -111,8 +111,9 @@ def process_items(
             ctx = multiprocessing.get_context("spawn")
         else:
             ctx = multiprocessing.get_context()
-            # A bit slower, but it reimports everything which is necessary to make matplotlib working.
-            # Chunksize should be higher or none
+            # A bit slower, but it reimports everything which is necessary
+            # to make matplotlib working.
+            # Chunksize should be higher or none.
         with ctx.Pool(processes=processes) as p:
             logs = p.starmap(action_method, [(i, *args) for i in items], chunksize)
     else:
