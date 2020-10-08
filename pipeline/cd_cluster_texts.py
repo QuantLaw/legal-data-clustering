@@ -1,7 +1,9 @@
 import os
 
 from clustering_utils.graph_api import get_clustering_result
-from clustering_utils.utils import filename_for_pp_config
+from clustering_utils.utils import (check_for_missing_files,
+                                    filename_for_pp_config, get_items,
+                                    get_no_overwrite_items)
 from quantlaw.utils.beautiful_soup import create_soup
 from quantlaw.utils.files import ensure_exists, list_dir
 
@@ -12,51 +14,18 @@ def cd_cluster_texts_prepare(
     overwrite, snapshots, pp_configs, source_folder, target_folder
 ):
     ensure_exists(target_folder)
-    items = [
-        dict(
-            snapshot=snapshot,
-            pp_ratio=pp_ratio,
-            pp_decay=pp_decay,
-            pp_merge=pp_merge,
-            pp_co_occurrence=pp_co_occurrence,
-            pp_co_occurrence_type=pp_co_occurrence_type,
-            seed=seed,
-            markov_time=markov_time,
-            consensus=consensus,
-            number_of_modules=number_of_modules,
-            method=method,
-        )
-        for snapshot in snapshots
-        for pp_ratio in pp_configs["pp_ratios"]
-        for pp_decay in pp_configs["pp_decays"]
-        for pp_merge in pp_configs["pp_merges"]
-        for pp_co_occurrence in pp_configs["pp_co_occurrences"]
-        for pp_co_occurrence_type in pp_configs["pp_co_occurrence_types"]
-        for markov_time in pp_configs["markov_times"]
-        for consensus in pp_configs["consensus"]
-        for seed in pp_configs["seeds"]
-        for number_of_modules in pp_configs["numbers_of_modules"]
-        for method in pp_configs["methods"]
-    ]
+    items = get_items(snapshots, pp_configs)
 
     # Check if source graphs exist
     existing_source_files = set(list_dir(source_folder, source_file_ext))
     required_source_files = {
         filename_for_pp_config(**item, file_ext=source_file_ext) for item in items
     }
-    missing_source_files = required_source_files - existing_source_files
-    if len(missing_source_files):
-        raise Exception(
-            f'Source clusterings are missing: {" ".join(sorted(missing_source_files))}'
-        )
+    check_for_missing_files(required_source_files, existing_source_files, "clustering")
 
     if not overwrite:
         existing_files = os.listdir(target_folder)
-        items = [
-            item
-            for item in items
-            if filename_for_pp_config(**item, file_ext="") not in existing_files
-        ]
+        items = get_no_overwrite_items(items, "", existing_files)
 
     return items
 

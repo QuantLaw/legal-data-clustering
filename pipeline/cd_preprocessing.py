@@ -8,7 +8,11 @@ import pandas as pd
 
 from clustering_utils.graph_api import quotient_decision_graph
 from clustering_utils.nodes_merging import quotient_graph_with_merge
-from clustering_utils.utils import filename_for_pp_config
+from clustering_utils.utils import (
+    check_for_missing_files,
+    filename_for_pp_config,
+    get_no_overwrite_items,
+)
 from quantlaw.utils.files import ensure_exists, list_dir
 from quantlaw.utils.networkx import decay_function, sequence_graph
 
@@ -39,26 +43,19 @@ def cd_preprocessing_prepare(
     # Check if source graphs exist
     existing_source_files = set(list_dir(f"{source_folder}/seqitems", ".gpickle.gz"))
     required_source_files = {f"{snapshot}.gpickle.gz" for snapshot in snapshots}
-    missing_source_files = required_source_files - existing_source_files
-    if len(missing_source_files):
-        raise Exception(
-            f'Source graphs are missing: {" ".join(sorted(missing_source_files))}'
-        )
+    check_for_missing_files(required_source_files, existing_source_files, "graphs")
 
     if not overwrite:
         existing_files = list_dir(target_folder, target_file_ext)
-        items = [
-            item
-            for item in items
-            if filename_for_pp_config(**item, file_ext=target_file_ext)
-            not in existing_files
-        ]
+        items = get_no_overwrite_items(items, target_file_ext, existing_files)
 
     return items
 
 
 def get_decision_network(path):
-    """Get decision network. Load or get from cache"""
+    """
+    Get decision network. Load or get from cache
+    """
     if not getattr(get_decision_network, "_cache", None):
         get_decision_network._cache = {}
     if path not in get_decision_network._cache:
