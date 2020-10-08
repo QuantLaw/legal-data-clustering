@@ -1,2 +1,5 @@
 ignore:
   - "tests"  # ignore folders and all its contents
+
+fixes:
+   - "./::"
