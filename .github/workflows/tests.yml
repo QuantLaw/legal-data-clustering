@@ -10,23 +10,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
-    - uses: actions/checkout@master
-      with:
-        repository: 'QuantLaw/legal-data-preprocessing'
-        path: 'legal_data_preprocessing'
-        ssh-key: ${{ secrets.SSHKEY }}
-
     - name: Setup Python
       uses: actions/setup-python@master
       with:
         python-version: 3.7
-    - uses: actions/cache@v2
-      if: startsWith(runner.os, 'Linux')
-      with:
-        path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-        restore-keys: |
-          ${{ runner.os }}-pip-
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
