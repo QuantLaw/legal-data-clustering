@@ -1,5 +1,4 @@
 import unittest
-from copy import deepcopy
 
 from clustering_utils.utils import (convert_filename_component_to_number,
                                     filename_for_pp_config,

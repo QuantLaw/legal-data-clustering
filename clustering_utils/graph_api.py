@@ -3,22 +3,16 @@ import os
 from collections import Counter, defaultdict
 
 import networkx as nx
-from cdlib import NodeClustering, readwrite
-from quantlaw.utils.networkx import hierarchy_graph, get_leaves
 
-from statics import (
-    US_CROSSREFERENCE_GRAPH_PATH,
-    DE_CROSSREFERENCE_GRAPH_PATH,
-    US_CD_CLUSTER_PATH,
-    DE_CD_CLUSTER_PATH,
-    US_CD_PREPROCESSED_GRAPH_PATH,
-    DE_CD_PREPROCESSED_GRAPH_PATH,
-)
-from clustering_utils.utils import (
-    get_config_from_filename,
-    filename_for_pp_config,
-    simplify_config_for_preprocessed_graph,
-)
+from cdlib import NodeClustering, readwrite
+from clustering_utils.utils import (filename_for_pp_config,
+                                    get_config_from_filename,
+                                    simplify_config_for_preprocessed_graph)
+from quantlaw.utils.networkx import get_leaves, hierarchy_graph
+from statics import (DE_CD_CLUSTER_PATH, DE_CD_PREPROCESSED_GRAPH_PATH,
+                     DE_CROSSREFERENCE_GRAPH_PATH, US_CD_CLUSTER_PATH,
+                     US_CD_PREPROCESSED_GRAPH_PATH,
+                     US_CROSSREFERENCE_GRAPH_PATH)
 
 
 def add_communities_to_graph(clustering: NodeClustering):
@@ -65,7 +59,6 @@ def get_clustering_result(cluster_path, dataset, graph_type, path_prefix=""):
 
     filename_base = os.path.splitext(os.path.split(cluster_path)[-1])[0]
     snapshot = filename_base.split("_")[0]
-    dataset_folder = f"{dataset.upper()}-data"
 
     if graph_type == "clustering":
         config = get_config_from_filename(filename_base)
