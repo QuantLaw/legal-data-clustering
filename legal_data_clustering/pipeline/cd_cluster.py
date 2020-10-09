@@ -5,15 +5,15 @@ import networkx as nx
 
 from cdlib import NodeClustering
 from cdlib.readwrite import write_community_json
-from legal_data_clustering.clustering_utils.utils import (
-    check_for_missing_files,
-    filename_for_pp_config,
-    get_items,
-    get_no_overwrite_items,
-)
 from legal_data_clustering.pipeline import cdlib_custom_algorithms
 from legal_data_clustering.pipeline.cdlib_custom_algorithms import (
     missings_nodes_as_additional_clusters,
+)
+from legal_data_clustering.utils.config_parsing import filename_for_pp_config
+from legal_data_clustering.utils.config_handling import (
+    check_for_missing_files,
+    get_items,
+    get_no_overwrite_items,
 )
 from quantlaw.utils.files import ensure_exists, list_dir
 

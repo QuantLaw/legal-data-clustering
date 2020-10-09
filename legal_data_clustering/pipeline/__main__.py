@@ -1,9 +1,9 @@
 import os
 import re
 
-from legal_data_clustering.clustering_utils.utils import process_items
 from legal_data_clustering.pipeline.main_parser import get_parser
 from legal_data_clustering.pipeline.main_step_imports import *
+from legal_data_clustering.utils.config_handling import process_items
 from statics import (ALL_YEARS, DE_CD_CLUSTER_EVOLUTION_INSPECTION_PATH,
                      DE_CD_CLUSTER_EVOLUTION_MAPPINGS_PATH,
                      DE_CD_CLUSTER_EVOLUTION_PATH,

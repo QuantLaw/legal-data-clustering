@@ -1,12 +1,13 @@
 import unittest
 
-from legal_data_clustering.clustering_utils.utils import (
+from legal_data_clustering.utils.config_handling import \
+    simplify_config_for_preprocessed_graph
+from legal_data_clustering.utils.config_parsing import (
     convert_filename_component_to_number, filename_for_pp_config,
-    get_config_from_filename, get_configs,
-    simplify_config_for_preprocessed_graph)
+    get_config_from_filename, get_configs)
 
 
-class TestUtils(unittest.TestCase):
+class TestConfigRelated(unittest.TestCase):
     def setUp(self):
         self.config = dict(
             snapshot="x",

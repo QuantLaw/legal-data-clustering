@@ -6,15 +6,11 @@ from collections import Counter
 import networkx as nx
 import pandas as pd
 
-from legal_data_clustering.clustering_utils.graph_api import quotient_decision_graph
-from legal_data_clustering.clustering_utils.nodes_merging import (
-    quotient_graph_with_merge,
-)
-from legal_data_clustering.clustering_utils.utils import (
-    check_for_missing_files,
-    filename_for_pp_config,
-    get_no_overwrite_items,
-)
+from legal_data_clustering.utils.config_handling import (
+    check_for_missing_files, get_no_overwrite_items)
+from legal_data_clustering.utils.config_parsing import filename_for_pp_config
+from legal_data_clustering.utils.graph_api import quotient_decision_graph
+from legal_data_clustering.utils.nodes_merging import quotient_graph_with_merge
 from quantlaw.utils.files import ensure_exists, list_dir
 from quantlaw.utils.networkx import decay_function, sequence_graph
 

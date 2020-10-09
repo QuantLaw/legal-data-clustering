@@ -1,10 +1,9 @@
 import os
 
-from legal_data_clustering.clustering_utils.graph_api import \
-    get_clustering_result
-from legal_data_clustering.clustering_utils.utils import (
-    check_for_missing_files, filename_for_pp_config, get_items,
-    get_no_overwrite_items)
+from legal_data_clustering.utils.config_handling import (
+    check_for_missing_files, get_items, get_no_overwrite_items)
+from legal_data_clustering.utils.config_parsing import filename_for_pp_config
+from legal_data_clustering.utils.graph_api import get_clustering_result
 from quantlaw.utils.beautiful_soup import create_soup
 from quantlaw.utils.files import ensure_exists, list_dir
 
