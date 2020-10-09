@@ -1,4 +1,3 @@
-git+git://github.com/quantlaw/quantlaw
 alabaster==0.7.12
 Babel==2.8.0
 beautifulsoup4==4.9.1
@@ -17,6 +16,7 @@ docutils==0.16
 eva-lcd==0.1.0
 future==0.18.2
 gensim==3.8.3
+git+git://github.com/quantlaw/quantlaw
 idna==2.10
 imagesize==1.2.0
 infomap==1.1.3

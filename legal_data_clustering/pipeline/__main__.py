@@ -2,57 +2,59 @@ import argparse
 import os
 import re
 
-from legal_data_preprocessing.statics import (
-    ALL_YEARS,
-    DE_CROSSREFERENCE_GRAPH_PATH,
-    US_CROSSREFERENCE_GRAPH_PATH,
-    DE_REFERENCE_PARSED_PATH,
-    US_REFERENCE_PARSED_PATH,
-    DE_SNAPSHOT_MAPPING_EDGELIST_PATH,
-    US_SNAPSHOT_MAPPING_EDGELIST_PATH,
-    DE_DECISIONS_NETWORK,
-)
-
-from pipeline.cd_cluster import cd_cluster_prepare, cd_cluster
-from pipeline.cd_cluster_evolution_graph import (
-    cd_cluster_evolution_graph_prepare,
+from legal_data_clustering.clustering_utils.utils import process_items
+from legal_data_clustering.pipeline.cd_cluster import cd_cluster, cd_cluster_prepare
+from legal_data_clustering.pipeline.cd_cluster_evolution_graph import (
     cd_cluster_evolution_graph,
+    cd_cluster_evolution_graph_prepare,
 )
-from pipeline.cd_cluster_evolution_inspection import (
-    cd_cluster_evolution_inspection_prepare,
+from legal_data_clustering.pipeline.cd_cluster_evolution_inspection import (
     cd_cluster_evolution_inspection,
+    cd_cluster_evolution_inspection_prepare,
 )
-from pipeline.cd_cluster_evolution_mappings import (
+from legal_data_clustering.pipeline.cd_cluster_evolution_mappings import (
     cd_cluster_evolution_mappings,
     cd_cluster_evolution_mappings_prepare,
 )
-from pipeline.cd_cluster_inspection import (
-    cd_cluster_inspection_prepare,
+from legal_data_clustering.pipeline.cd_cluster_inspection import (
     cd_cluster_inspection,
+    cd_cluster_inspection_prepare,
 )
-from pipeline.cd_cluster_texts import cd_cluster_texts_prepare, cd_cluster_texts
-from pipeline.cd_preprocessing import (
-    cd_preprocessing_prepare,
+from legal_data_clustering.pipeline.cd_cluster_texts import (
+    cd_cluster_texts,
+    cd_cluster_texts_prepare,
+)
+from legal_data_clustering.pipeline.cd_preprocessing import (
     cd_preprocessing,
+    cd_preprocessing_prepare,
     get_decision_network,
 )
-
-from legal_data_preprocessing.utils.common import process_items
 from statics import (
-    DE_CD_PREPROCESSED_GRAPH_PATH,
-    US_CD_PREPROCESSED_GRAPH_PATH,
-    DE_CD_CLUSTER_PATH,
-    US_CD_CLUSTER_PATH,
-    DE_CD_CLUSTER_TEXTS_PATH,
-    US_CD_CLUSTER_TEXTS_PATH,
-    DE_CD_CLUSTER_EVOLUTION_PATH,
-    US_CD_CLUSTER_EVOLUTION_PATH,
-    DE_CD_CLUSTER_EVOLUTION_MAPPINGS_PATH,
-    US_CD_CLUSTER_EVOLUTION_MAPPINGS_PATH,
-    DE_CD_CLUSTER_INSPECTION_PATH,
-    US_CD_CLUSTER_INSPECTION_PATH,
     DE_CD_CLUSTER_EVOLUTION_INSPECTION_PATH,
+    DE_CD_CLUSTER_EVOLUTION_MAPPINGS_PATH,
+    DE_CD_CLUSTER_EVOLUTION_PATH,
+    DE_CD_CLUSTER_INSPECTION_PATH,
+    DE_CD_CLUSTER_PATH,
+    DE_CD_CLUSTER_TEXTS_PATH,
+    DE_CD_PREPROCESSED_GRAPH_PATH,
     US_CD_CLUSTER_EVOLUTION_INSPECTION_PATH,
+    US_CD_CLUSTER_EVOLUTION_MAPPINGS_PATH,
+    US_CD_CLUSTER_EVOLUTION_PATH,
+    US_CD_CLUSTER_INSPECTION_PATH,
+    US_CD_CLUSTER_PATH,
+    US_CD_CLUSTER_TEXTS_PATH,
+    US_CD_PREPROCESSED_GRAPH_PATH,
+)
+
+from statics import (
+    ALL_YEARS,
+    DE_CROSSREFERENCE_GRAPH_PATH,
+    DE_DECISIONS_NETWORK,
+    DE_REFERENCE_PARSED_PATH,
+    DE_SNAPSHOT_MAPPING_EDGELIST_PATH,
+    US_CROSSREFERENCE_GRAPH_PATH,
+    US_REFERENCE_PARSED_PATH,
+    US_SNAPSHOT_MAPPING_EDGELIST_PATH,
 )
 
 if __name__ == "__main__":
@@ -82,7 +84,8 @@ if __name__ == "__main__":
         type=str,
         default=["all"],
         help=(
-            "snapshots for crossreferences. Eg. 2010-01-01 for de dataset or 2010 for us dataset. "
+            "snapshots for crossreferences."
+            "Eg. 2010-01-01 for de dataset or 2010 for us dataset. "
             "To run on whole research window: all"
         ),
     )
@@ -95,7 +98,8 @@ if __name__ == "__main__":
         type=float,
         default=[0.0],
         help=(
-            "Graph preprocessing parameter. Determines the weight of the highest possible sequence weight. "
+            "Graph preprocessing parameter. "
+            "Determines the weight of the highest possible sequence weight. "
             "If 0, sequences are excluded."
             "The weight of cross-references is constantly 1."
         ),
@@ -109,7 +113,8 @@ if __name__ == "__main__":
         help=(
             "Graph preprocessing parameter. Determines how sequence edges decay, "
             "if sequential nodes are not part of the lowest chapter."
-            "Expressed as negative exponent of the distance of sequential nodes in the hierarchy - 1. "
+            "Expressed as negative exponent of the distance of sequential nodes "
+            "in the hierarchy - 1. "
         ),
     )
     parser.add_argument(
@@ -119,9 +124,10 @@ if __name__ == "__main__":
         type=int,
         default=[-1],
         help=(
-            "Graph preprocessing parameter. The maximal size of parent nodes children are rolled up to. "
+            "Graph preprocessing parameter. "
+            "The maximal size of parent nodes children are rolled up to. "
             "Only if the size of the parent node remains below the merge (threshold), "
-            'its children will be "merged" into the parent. '
+            "its children will be 'merged' into the parent. "
             "Special param: -1. Merging into chapter in US and Buch or Gesetz in DE"
         ),
     )
@@ -162,7 +168,8 @@ if __name__ == "__main__":
         nargs="+",
         type=int,
         default=[0],
-        help="Rerun the clustering with different seeds and altered weights of edges and negotiate common result.",
+        help="Rerun the clustering with different seeds and altered weights of "
+        "edges and negotiate common result.",
     )
 
     parser.add_argument(
@@ -171,7 +178,8 @@ if __name__ == "__main__":
         nargs="+",
         type=int,
         default=[0],
-        help="Sets infomap parameter referred-number-of-modules. (no effect for louvain) Default: 0",
+        help="Sets infomap parameter referred-number-of-modules. "
+        "(no effect for louvain) Default: 0",
     )
 
     parser.add_argument(
@@ -227,7 +235,8 @@ if __name__ == "__main__":
         if not re.fullmatch(r"\d{4}(-\d{2}-\d{2})?", snapshot):
             raise Exception(
                 "Add --snapshots as argument. "
-                "E.g. for de --snapshots 2012-01-31 2013-01-31 or for us --snapshot 2001"
+                "E.g. for de --snapshots 2012-01-31 2013-01-31 "
+                "or for us --snapshot 2001"
             )
 
     if "all" in steps:
@@ -321,7 +330,10 @@ if __name__ == "__main__":
             target_folder = US_CD_CLUSTER_EVOLUTION_MAPPINGS_PATH
 
         items = cd_cluster_evolution_mappings_prepare(
-            overwrite, cluster_mapping_configs, source_folder, target_folder,
+            overwrite,
+            cluster_mapping_configs,
+            source_folder,
+            target_folder,
         )
         process_items(
             items,

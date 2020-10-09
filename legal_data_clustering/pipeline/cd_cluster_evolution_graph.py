@@ -4,9 +4,13 @@ import pickle
 from collections import Counter, defaultdict
 
 import networkx as nx
-from cdlib import readwrite
 
-from clustering_utils.utils import ensure_exists, list_dir, filename_for_pp_config
+from cdlib import readwrite
+from legal_data_clustering.clustering_utils.utils import (
+    filename_for_pp_config,
+    get_configs,
+)
+from quantlaw.utils.files import ensure_exists, list_dir
 
 
 def cd_cluster_evolution_graph_prepare(
@@ -18,32 +22,7 @@ def cd_cluster_evolution_graph_prepare(
     target_folder,
 ):
     ensure_exists(target_folder)
-
-    # get configs
-    configs = [
-        dict(
-            pp_ratio=pp_ratio,
-            pp_decay=pp_decay,
-            pp_merge=pp_merge,
-            pp_co_occurrence=pp_co_occurrence,
-            pp_co_occurrence_type=pp_co_occurrence_type,
-            seed=seed,
-            markov_time=markov_time,
-            consensus=consensus,
-            number_of_modules=number_of_modules,
-            method=method,
-        )
-        for pp_ratio in cluster_mapping_configs["pp_ratios"]
-        for pp_decay in cluster_mapping_configs["pp_decays"]
-        for pp_merge in cluster_mapping_configs["pp_merges"]
-        for pp_co_occurrence in cluster_mapping_configs["pp_co_occurrences"]
-        for pp_co_occurrence_type in cluster_mapping_configs["pp_co_occurrence_types"]
-        for markov_time in cluster_mapping_configs["markov_times"]
-        for consensus in cluster_mapping_configs["consensus"]
-        for seed in cluster_mapping_configs["seeds"]
-        for number_of_modules in cluster_mapping_configs["numbers_of_modules"]
-        for method in cluster_mapping_configs["methods"]
-    ]
+    configs = get_configs(cluster_mapping_configs)
 
     # Check if clusterings exist
     for config in configs:
@@ -52,25 +31,14 @@ def cd_cluster_evolution_graph_prepare(
         )
 
         mapping_files = list_dir(snaphot_mapping_folder, ".json")
-        for snapshot1, snapshot2 in zip(snapshots[:-1], snapshots[1:]):
-            mapping_file = f"{snapshot1}_{snapshot2}.json"
-            if mapping_file not in mapping_files:
-                raise Exception(f"mapping {mapping_file} is missing")
+        check_mapping_files(mapping_files, snapshots, config, ".json")
 
         mapping_files = list_dir(subseqitem_mapping_folder, ".pickle")
-        for snapshot in snapshots:
-            mapping_file = f'{snapshot}_{config["pp_merge"]}.pickle'
-            if mapping_file not in mapping_files:
-                raise Exception(f"mapping {mapping_file} is missing")
+        check_mapping_files(mapping_files, snapshots, config, ".pickle")
 
     existing_files = set(list_dir(target_folder, ".gpickle.gz"))
     if not overwrite:
-        configs = [
-            config
-            for config in configs
-            if filename_for_pp_config(snapshot="all", **config, file_ext=".gpickle.gz")
-            not in existing_files
-        ]
+        get_configs_no_overwrite(configs, existing_files)
 
     return configs
 
@@ -210,6 +178,31 @@ def get_cluster_law_names_counting_seqitems(preprocessed_mappings, communities):
             ]
         )
     return counters
+
+
+def check_mapping_files(mapping_files, snapshots, config, ending):
+    if ending == ".json":
+        for snapshot1, snapshot2 in zip(snapshots[:-1], snapshots[1:]):
+            mapping_file = f"{snapshot1}_{snapshot2}.json"
+            if mapping_file not in mapping_files:
+                raise Exception(f"mapping {mapping_file} is missing")
+    elif ending == ".pickle":
+        for snapshot in snapshots:
+            mapping_file = f'{snapshot}_{config["pp_merge"]}.pickle'
+            if mapping_file not in mapping_files:
+                raise Exception(f"mapping {mapping_file} is missing")
+    else:
+        raise Exception(f"Invalid ending '{ending}' (use '.json'|'.pickle')!")
+
+
+def get_configs_no_overwrite(configs, existing_files):
+    configs = [
+        config
+        for config in configs
+        if filename_for_pp_config(snapshot="all", **config, file_ext=".gpickle.gz")
+        not in existing_files
+    ]
+    return configs
 
 
 def get_config_clustering_files(config, source_folder):

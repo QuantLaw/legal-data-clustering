@@ -10,7 +10,7 @@ It is, inter alia, used to produce the results reported in the following publica
 
 Daniel Martin Katz, Corinna Coupette, Janis Beckedorf, and Dirk Hartung, Complex Societies and the Growth of the Law, *Sci. Rep.* **10** (2020), [https://doi.org/10.1038/s41598-020-73623-x](https://doi.org/10.1038/s41598-020-73623-x)
 
-Related Repositories: 
+Related Repositories:
 - [Complex Societies and the Growth of the Law](https://github.com/QuantLaw/Complex-Societies-and-Growth) ([First Publication Release](http://dx.doi.org/10.5281/zenodo.4070769))
 - [Legal Data Preprocessing](https://github.com/QuantLaw/legal-data-preprocessing) ([First Publication Release](http://dx.doi.org/10.5281/zenodo.4070773))
 
