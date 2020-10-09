@@ -1,9 +1,9 @@
 import unittest
 
-from clustering_utils.utils import (convert_filename_component_to_number,
-                                    filename_for_pp_config,
-                                    get_config_from_filename, get_configs,
-                                    simplify_config_for_preprocessed_graph)
+from legal_data_clustering.clustering_utils.utils import (
+    convert_filename_component_to_number, filename_for_pp_config,
+    get_config_from_filename, get_configs,
+    simplify_config_for_preprocessed_graph)
 
 
 class TestUtils(unittest.TestCase):

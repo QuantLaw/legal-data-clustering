@@ -2,26 +2,29 @@ import argparse
 import os
 import re
 
-from clustering_utils.utils import process_items
-from pipeline.cd_cluster import cd_cluster, cd_cluster_prepare
-from pipeline.cd_cluster_evolution_graph import (
+from legal_data_clustering.clustering_utils.utils import process_items
+from legal_data_clustering.pipeline.cd_cluster import cd_cluster, cd_cluster_prepare
+from legal_data_clustering.pipeline.cd_cluster_evolution_graph import (
     cd_cluster_evolution_graph,
     cd_cluster_evolution_graph_prepare,
 )
-from pipeline.cd_cluster_evolution_inspection import (
+from legal_data_clustering.pipeline.cd_cluster_evolution_inspection import (
     cd_cluster_evolution_inspection,
     cd_cluster_evolution_inspection_prepare,
 )
-from pipeline.cd_cluster_evolution_mappings import (
+from legal_data_clustering.pipeline.cd_cluster_evolution_mappings import (
     cd_cluster_evolution_mappings,
     cd_cluster_evolution_mappings_prepare,
 )
-from pipeline.cd_cluster_inspection import (
+from legal_data_clustering.pipeline.cd_cluster_inspection import (
     cd_cluster_inspection,
     cd_cluster_inspection_prepare,
 )
-from pipeline.cd_cluster_texts import cd_cluster_texts, cd_cluster_texts_prepare
-from pipeline.cd_preprocessing import (
+from legal_data_clustering.pipeline.cd_cluster_texts import (
+    cd_cluster_texts,
+    cd_cluster_texts_prepare,
+)
+from legal_data_clustering.pipeline.cd_preprocessing import (
     cd_preprocessing,
     cd_preprocessing_prepare,
     get_decision_network,
@@ -43,7 +46,7 @@ from statics import (
     US_CD_PREPROCESSED_GRAPH_PATH,
 )
 
-from .statics import (
+from statics import (
     ALL_YEARS,
     DE_CROSSREFERENCE_GRAPH_PATH,
     DE_DECISIONS_NETWORK,

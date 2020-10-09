@@ -2,8 +2,10 @@ import os
 
 import networkx as nx
 
-from clustering_utils.graph_api import cluster_families, get_heading_path
-from clustering_utils.utils import filename_for_pp_config, get_configs
+from legal_data_clustering.clustering_utils.graph_api import (cluster_families,
+                                                              get_heading_path)
+from legal_data_clustering.clustering_utils.utils import (
+    filename_for_pp_config, get_configs)
 from quantlaw.utils.files import ensure_exists, list_dir
 from quantlaw.utils.networkx import hierarchy_graph
 

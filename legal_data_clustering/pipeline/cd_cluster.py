@@ -5,12 +5,16 @@ import networkx as nx
 
 from cdlib import NodeClustering
 from cdlib.readwrite import write_community_json
-from clustering_utils.utils import (check_for_missing_files,
-                                    filename_for_pp_config, get_items,
-                                    get_no_overwrite_items)
-from pipeline import cdlib_custom_algorithms
-from pipeline.cdlib_custom_algorithms import \
-    missings_nodes_as_additional_clusters
+from legal_data_clustering.clustering_utils.utils import (
+    check_for_missing_files,
+    filename_for_pp_config,
+    get_items,
+    get_no_overwrite_items,
+)
+from legal_data_clustering.pipeline import cdlib_custom_algorithms
+from legal_data_clustering.pipeline.cdlib_custom_algorithms import (
+    missings_nodes_as_additional_clusters,
+)
 from quantlaw.utils.files import ensure_exists, list_dir
 
 source_file_ext = ".gpickle.gz"

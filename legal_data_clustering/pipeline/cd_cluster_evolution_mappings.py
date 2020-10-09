@@ -5,7 +5,8 @@ from collections import defaultdict
 
 import networkx as nx
 
-from clustering_utils.nodes_merging import quotient_graph_with_merge
+from legal_data_clustering.clustering_utils.nodes_merging import \
+    quotient_graph_with_merge
 from quantlaw.utils.files import ensure_exists, list_dir
 from quantlaw.utils.networkx import hierarchy_graph
 

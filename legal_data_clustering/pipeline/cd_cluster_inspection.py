@@ -1,6 +1,6 @@
-from clustering_utils.graph_api import (get_clustering_result,
-                                        get_heading_path, hierarchy_graph)
-from clustering_utils.utils import filename_for_pp_config
+from legal_data_clustering.clustering_utils.graph_api import (
+    get_clustering_result, get_heading_path, hierarchy_graph)
+from legal_data_clustering.clustering_utils.utils import filename_for_pp_config
 from quantlaw.utils.files import ensure_exists, list_dir
 
 source_file_ext = ".json"

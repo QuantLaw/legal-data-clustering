@@ -6,9 +6,11 @@ from collections import Counter
 import networkx as nx
 import pandas as pd
 
-from clustering_utils.graph_api import quotient_decision_graph
-from clustering_utils.nodes_merging import quotient_graph_with_merge
-from clustering_utils.utils import (
+from legal_data_clustering.clustering_utils.graph_api import quotient_decision_graph
+from legal_data_clustering.clustering_utils.nodes_merging import (
+    quotient_graph_with_merge,
+)
+from legal_data_clustering.clustering_utils.utils import (
     check_for_missing_files,
     filename_for_pp_config,
     get_no_overwrite_items,
