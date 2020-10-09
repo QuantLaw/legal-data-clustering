@@ -1,6 +1,6 @@
 from legal_data_clustering.utils.config_parsing import (
     convert_filename_component_to_number, filename_for_pp_config,
-    get_config_from_filename, get_configs)
+    get_config_from_filename)
 from tests.test_classes import ConfigTest
 
 
@@ -50,15 +50,6 @@ class TestConfigParsing(ConfigTest):
             ),
             config,
         )
-
-    def test_get_configs(self):
-        configs = get_configs(self.cluster_mapping_configs)
-        for config in configs:
-            config["file_ext"] = ".json"
-            config["snapshot"] = "x"
-            self.assertTrue(config in self.all_cluster_mapping_configs)
-        for config in self.all_cluster_mapping_configs:
-            self.assertTrue(config in configs)
 
 
 def config_dict_to_list(config):

@@ -1,7 +1,7 @@
 import os
 
 from legal_data_clustering.utils.config_handling import (
-    check_for_missing_files, get_items, get_no_overwrite_items)
+    check_for_missing_files, get_configs_for_snapshots, get_no_overwrite_items)
 from legal_data_clustering.utils.config_parsing import filename_for_pp_config
 from legal_data_clustering.utils.graph_api import get_clustering_result
 from quantlaw.utils.beautiful_soup import create_soup
@@ -14,7 +14,7 @@ def cd_cluster_texts_prepare(
     overwrite, snapshots, pp_configs, source_folder, target_folder
 ):
     ensure_exists(target_folder)
-    items = get_items(snapshots, pp_configs)
+    items = get_configs_for_snapshots(snapshots, pp_configs)
 
     # Check if source graphs exist
     existing_source_files = set(list_dir(source_folder, source_file_ext))

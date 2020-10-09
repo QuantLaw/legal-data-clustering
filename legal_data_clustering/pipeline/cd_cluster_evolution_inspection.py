@@ -2,8 +2,8 @@ import os
 
 import networkx as nx
 
-from legal_data_clustering.utils.config_parsing import (filename_for_pp_config,
-                                                        get_configs)
+from legal_data_clustering.utils.config_handling import get_configs
+from legal_data_clustering.utils.config_parsing import filename_for_pp_config
 from legal_data_clustering.utils.graph_api import (cluster_families,
                                                    get_heading_path)
 from quantlaw.utils.files import ensure_exists, list_dir

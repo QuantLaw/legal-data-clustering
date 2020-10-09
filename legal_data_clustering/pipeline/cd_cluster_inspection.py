@@ -1,3 +1,5 @@
+from legal_data_clustering.utils.config_handling import \
+    get_configs_for_snapshots
 from legal_data_clustering.utils.config_parsing import filename_for_pp_config
 from legal_data_clustering.utils.graph_api import (get_clustering_result,
                                                    get_heading_path,
@@ -8,35 +10,10 @@ source_file_ext = ".json"
 
 
 def cd_cluster_inspection_prepare(
-    overwrite, snapshots, pp_configs, source_folder, target_folder
+    overwrite, snapshots, meta_config, source_folder, target_folder
 ):
     ensure_exists(target_folder)
-    items = [
-        dict(
-            snapshot=snapshot,
-            pp_ratio=pp_ratio,
-            pp_decay=pp_decay,
-            pp_merge=pp_merge,
-            pp_co_occurrence=pp_co_occurrence,
-            pp_co_occurrence_type=pp_co_occurrence_type,
-            seed=seed,
-            markov_time=markov_time,
-            consensus=consensus,
-            number_of_modules=number_of_modules,
-            method=method,
-        )
-        for snapshot in snapshots
-        for pp_ratio in pp_configs["pp_ratios"]
-        for pp_decay in pp_configs["pp_decays"]
-        for pp_merge in pp_configs["pp_merges"]
-        for pp_co_occurrence in pp_configs["pp_co_occurrences"]
-        for pp_co_occurrence_type in pp_configs["pp_co_occurrence_types"]
-        for markov_time in pp_configs["markov_times"]
-        for consensus in pp_configs["consensus"]
-        for seed in pp_configs["seeds"]
-        for number_of_modules in pp_configs["numbers_of_modules"]
-        for method in pp_configs["methods"]
-    ]
+    items = get_configs_for_snapshots(snapshots, meta_config)
 
     # Check if source graphs exist
     existing_source_files = set(list_dir(source_folder, source_file_ext))

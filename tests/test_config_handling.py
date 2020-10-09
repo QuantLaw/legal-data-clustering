@@ -1,5 +1,6 @@
-from legal_data_clustering.utils.config_handling import \
-    simplify_config_for_preprocessed_graph
+from legal_data_clustering.utils.config_handling import (
+    get_configs, get_configs_for_snapshots,
+    simplify_config_for_preprocessed_graph)
 from tests.test_classes import ConfigTest
 
 
@@ -19,3 +20,20 @@ class TestConfigHandling(ConfigTest):
             "pp_co_occurrence_type",
         ]:
             self.assertEqual(config[attr], self.config[attr])
+
+    def test_get_configs_for_snapshots(self):
+        configs = get_configs_for_snapshots(["x"], self.cluster_mapping_configs)
+        for config in configs:
+            config["file_ext"] = ".json"
+            self.assertTrue(config in self.all_cluster_mapping_configs)
+        for config in self.all_cluster_mapping_configs:
+            self.assertTrue(config in configs)
+
+    def test_get_configs(self):
+        configs = get_configs(self.cluster_mapping_configs)
+        for config in configs:
+            config["file_ext"] = ".json"
+            config["snapshot"] = "x"
+            self.assertTrue(config in self.all_cluster_mapping_configs)
+        for config in self.all_cluster_mapping_configs:
+            self.assertTrue(config in configs)

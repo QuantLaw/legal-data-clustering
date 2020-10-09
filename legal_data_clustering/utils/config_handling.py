@@ -41,7 +41,7 @@ def process_items(
     return logs
 
 
-def get_items(snapshots, pp_configs):
+def get_configs_for_snapshots(snapshots, meta_config):
     return [
         dict(
             snapshot=snapshot,
@@ -57,17 +57,24 @@ def get_items(snapshots, pp_configs):
             method=method,
         )
         for snapshot in snapshots
-        for pp_ratio in pp_configs["pp_ratios"]
-        for pp_decay in pp_configs["pp_decays"]
-        for pp_merge in pp_configs["pp_merges"]
-        for pp_co_occurrence in pp_configs["pp_co_occurrences"]
-        for pp_co_occurrence_type in pp_configs["pp_co_occurrence_types"]
-        for markov_time in pp_configs["markov_times"]
-        for consensus in pp_configs["consensus"]
-        for seed in pp_configs["seeds"]
-        for number_of_modules in pp_configs["numbers_of_modules"]
-        for method in pp_configs["methods"]
+        for pp_ratio in meta_config["pp_ratios"]
+        for pp_decay in meta_config["pp_decays"]
+        for pp_merge in meta_config["pp_merges"]
+        for pp_co_occurrence in meta_config["pp_co_occurrences"]
+        for pp_co_occurrence_type in meta_config["pp_co_occurrence_types"]
+        for markov_time in meta_config["markov_times"]
+        for consensus in meta_config["consensus"]
+        for seed in meta_config["seeds"]
+        for number_of_modules in meta_config["numbers_of_modules"]
+        for method in meta_config["methods"]
     ]
+
+
+def get_configs(meta_config):
+    configs = get_configs_for_snapshots([None], meta_config)
+    for config in configs:
+        del config["snapshot"]
+    return configs
 
 
 def get_no_overwrite_items(items, target_file_ext, existing_files):

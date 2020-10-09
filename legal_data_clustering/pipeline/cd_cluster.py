@@ -6,15 +6,11 @@ import networkx as nx
 from cdlib import NodeClustering
 from cdlib.readwrite import write_community_json
 from legal_data_clustering.pipeline import cdlib_custom_algorithms
-from legal_data_clustering.pipeline.cdlib_custom_algorithms import (
-    missings_nodes_as_additional_clusters,
-)
-from legal_data_clustering.utils.config_parsing import filename_for_pp_config
+from legal_data_clustering.pipeline.cdlib_custom_algorithms import \
+    missings_nodes_as_additional_clusters
 from legal_data_clustering.utils.config_handling import (
-    check_for_missing_files,
-    get_items,
-    get_no_overwrite_items,
-)
+    check_for_missing_files, get_configs_for_snapshots, get_no_overwrite_items)
+from legal_data_clustering.utils.config_parsing import filename_for_pp_config
 from quantlaw.utils.files import ensure_exists, list_dir
 
 source_file_ext = ".gpickle.gz"
@@ -23,7 +19,7 @@ target_file_ext = ".json"
 
 def cd_cluster_prepare(overwrite, snapshots, pp_configs, source_folder, target_folder):
     ensure_exists(target_folder)
-    items = get_items(snapshots, pp_configs)
+    items = get_configs_for_snapshots(snapshots, pp_configs)
 
     # Check if source graphs exist
     existing_source_files = set(list_dir(source_folder, source_file_ext))
