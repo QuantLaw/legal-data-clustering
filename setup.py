@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import find_namespace_packages, setup
 
 setup(
     name="legal_data_clustering",
@@ -8,6 +8,6 @@ setup(
     author="Corinna Coupette",
     author_email="",
     license="new-bsd",
-    packages=["legal_data_clustering"],
+    packages=find_namespace_packages(include=["legal_data_clustering.*"]),
     zip_safe=False,
 )
