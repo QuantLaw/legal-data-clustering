@@ -6,19 +6,13 @@ import networkx as nx
 
 from cdlib import NodeClustering, readwrite
 from legal_data_clustering.clustering_utils.utils import (
-    filename_for_pp_config,
-    get_config_from_filename,
-    simplify_config_for_preprocessed_graph,
-)
+    filename_for_pp_config, get_config_from_filename,
+    simplify_config_for_preprocessed_graph)
 from quantlaw.utils.networkx import get_leaves, hierarchy_graph
-from statics import (
-    DE_CD_CLUSTER_PATH,
-    DE_CD_PREPROCESSED_GRAPH_PATH,
-    DE_CROSSREFERENCE_GRAPH_PATH,
-    US_CD_CLUSTER_PATH,
-    US_CD_PREPROCESSED_GRAPH_PATH,
-    US_CROSSREFERENCE_GRAPH_PATH,
-)
+from statics import (DE_CD_CLUSTER_PATH, DE_CD_PREPROCESSED_GRAPH_PATH,
+                     DE_CROSSREFERENCE_GRAPH_PATH, US_CD_CLUSTER_PATH,
+                     US_CD_PREPROCESSED_GRAPH_PATH,
+                     US_CROSSREFERENCE_GRAPH_PATH)
 
 
 def add_communities_to_graph(clustering: NodeClustering):
