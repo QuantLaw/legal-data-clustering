@@ -1,3 +1,7 @@
+def convert_filename_component_to_number(text, value_type=float):
+    return value_type(text[0] + text[1:].replace("-", "."))
+
+
 def filename_for_pp_config(
     snapshot,
     pp_ratio,
@@ -29,10 +33,6 @@ def filename_for_pp_config(
     if consensus:
         filename += f"_c{consensus}"
     return filename.replace(".", "-") + file_ext
-
-
-def convert_filename_component_to_number(text, value_type=float):
-    return value_type(text[0] + text[1:].replace("-", "."))
 
 
 def get_config_from_filename(filename):
