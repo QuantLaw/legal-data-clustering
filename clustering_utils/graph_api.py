@@ -449,3 +449,11 @@ def get_heading_path(G_hierarchy: nx.DiGraph, n):
         predecessor = predecessors[0]
         heading = get_heading_path(G_hierarchy, predecessor) + " / " + heading
     return heading
+
+
+def add_headings_path(G):
+    H = hierarchy_graph(G)
+    heading_paths = {}
+    for key in H.nodes:
+        heading_paths[key] = "/".join(get_heading_path(H, key))
+    nx.set_node_attributes(G, heading_paths, "heading_path")
