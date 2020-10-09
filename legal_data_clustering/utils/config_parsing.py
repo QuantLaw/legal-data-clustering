@@ -45,31 +45,31 @@ def get_config_from_filename(filename):
     )
     if len(components) > 4:
         for component in components[4:]:
-            if component.startswith("o"):
-                config["pp_co_occurrence"] = convert_filename_component_to_number(
-                    component[1:]
-                )
-            if component.startswith("t-"):
-                config["pp_co_occurrence_type"] = component[len("t-") :]
-            if component.startswith("a-"):
-                config["method"] = component[len("a-") :]
-            if component.startswith("n"):
-                config["number_of_modules"] = convert_filename_component_to_number(
-                    component[1:], value_type=int
-                )
-            if component.startswith("m"):
-                config["markov_time"] = convert_filename_component_to_number(
-                    component[1:]
-                )
-            if component.startswith("s"):
-                config["seed"] = convert_filename_component_to_number(
-                    component[1:], value_type=int
-                )
-            if component.startswith("c"):
-                config["consensus"] = convert_filename_component_to_number(
-                    component[1:], value_type=int
-                )
+            modify_config(config, component)
     return config
+
+
+def modify_config(config, component):
+    if component.startswith("o"):
+        config["pp_co_occurrence"] = convert_filename_component_to_number(component[1:])
+    if component.startswith("t-"):
+        config["pp_co_occurrence_type"] = component[len("t-") :]
+    if component.startswith("a-"):
+        config["method"] = component[len("a-") :]
+    if component.startswith("n"):
+        config["number_of_modules"] = convert_filename_component_to_number(
+            component[1:], value_type=int
+        )
+    if component.startswith("m"):
+        config["markov_time"] = convert_filename_component_to_number(component[1:])
+    if component.startswith("s"):
+        config["seed"] = convert_filename_component_to_number(
+            component[1:], value_type=int
+        )
+    if component.startswith("c"):
+        config["consensus"] = convert_filename_component_to_number(
+            component[1:], value_type=int
+        )
 
 
 def get_configs(cluster_mapping_configs):
