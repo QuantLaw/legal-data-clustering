@@ -2,7 +2,6 @@ beautifulsoup4
 cdlib
 coverage
 infomap
-infomap
 lxml
 networkx
 numpy
