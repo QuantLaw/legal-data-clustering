@@ -22,4 +22,34 @@ Related Data: [Preprocessed Input Data for *Sci. Rep.* **10** (2020)](http://dx.
 2. Set up a virtual environment and activate it. (This is not required but recommended.)
 3. Install the required packages `pip install -r requirements.txt`.
 
+
 ## Usage
+
+### Download or generate the data
+
+One option is to generate the required data yourself using
+https://github.com/QuantLaw/legal-data-preprocessing (also available
+at http://dx.doi.org/10.5281/zenodo.4070773 .)
+
+Another option is to use the generated data from  [Preprocessed Input Data for *Sci. Rep.* **10** (2020)](http://dx.doi.org/10.5281/zenodo.4070767)
+This repository also contains the clustering results. To execute the clustering you
+only need the following directories. The other directories should be removed as otherwise
+clustering steps might be skipped.
+
+Required files for Germany relative to this repository
+
+- ../legal-networks-data/de/2_xml
+- ../legal-networks-data/de/4_crossreference_graph
+- ../legal-networks-data/de/5_snapshot_mapping_edgelist
+
+Required files for USA relative to this repository
+
+- ../legal-networks-data/us/2_xml
+- ../legal-networks-data/us/4_crossreference_graph
+- ../legal-networks-data/us/5_snapshot_mapping_edgelist
+
+
+### Run
+
+Execute `./run_example_configs.sh` to preprocess the graphs in multiple
+configurations, cluster them, map the clusterings over all available years.
