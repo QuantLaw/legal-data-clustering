@@ -6,7 +6,9 @@ lxml
 networkx
 numpy
 pandas
+pre-commit
 python-louvain
+quantlaw
 quantlaw
 regex
 textdistance
