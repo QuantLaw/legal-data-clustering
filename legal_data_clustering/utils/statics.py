@@ -1,6 +1,6 @@
 ALL_YEARS = list(range(1994, 2019))
 
-US_DATA_PATH = "../../../legal-networks-data/us"
+US_DATA_PATH = "../legal-networks-data/us"
 US_TEMP_DATA_PATH = "temp/us"
 
 US_REFERENCE_PARSED_PATH = f"{US_DATA_PATH}/2_xml"
@@ -19,7 +19,7 @@ US_CD_CLUSTER_EVOLUTION_INSPECTION_PATH = (
     f"{US_DATA_PATH}/15_cluster_evolution_inspection"
 )
 
-DE_DATA_PATH = "../../../legal-networks-data/de"
+DE_DATA_PATH = "../legal-networks-data/de"
 DE_TEMP_DATA_PATH = "temp/de"
 
 DE_REFERENCE_PARSED_PATH = f"{DE_DATA_PATH}/2_xml"
