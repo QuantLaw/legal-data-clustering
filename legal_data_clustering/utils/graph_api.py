@@ -13,7 +13,7 @@ from legal_data_clustering.utils.config_handling import (
     simplify_config_for_preprocessed_graph,
 )
 from quantlaw.utils.networkx import get_leaves, hierarchy_graph
-from statics import (
+from legal_data_clustering.statics import (
     DE_CD_CLUSTER_PATH,
     DE_CD_PREPROCESSED_GRAPH_PATH,
     DE_CROSSREFERENCE_GRAPH_PATH,

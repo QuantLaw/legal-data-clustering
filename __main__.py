@@ -17,21 +17,21 @@ from legal_data_clustering.pipeline.cd_cluster_texts import (
 from legal_data_clustering.pipeline.cd_preprocessing import (
     cd_preprocessing, cd_preprocessing_prepare, get_decision_network)
 from legal_data_clustering.utils.config_handling import process_items
-from statics import (ALL_YEARS, DE_CD_CLUSTER_EVOLUTION_INSPECTION_PATH,
-                     DE_CD_CLUSTER_EVOLUTION_MAPPINGS_PATH,
-                     DE_CD_CLUSTER_EVOLUTION_PATH,
-                     DE_CD_CLUSTER_INSPECTION_PATH, DE_CD_CLUSTER_PATH,
-                     DE_CD_CLUSTER_TEXTS_PATH, DE_CD_PREPROCESSED_GRAPH_PATH,
-                     DE_CROSSREFERENCE_GRAPH_PATH, DE_DECISIONS_NETWORK,
-                     DE_REFERENCE_PARSED_PATH,
-                     DE_SNAPSHOT_MAPPING_EDGELIST_PATH,
-                     US_CD_CLUSTER_EVOLUTION_INSPECTION_PATH,
-                     US_CD_CLUSTER_EVOLUTION_MAPPINGS_PATH,
-                     US_CD_CLUSTER_EVOLUTION_PATH,
-                     US_CD_CLUSTER_INSPECTION_PATH, US_CD_CLUSTER_PATH,
-                     US_CD_CLUSTER_TEXTS_PATH, US_CD_PREPROCESSED_GRAPH_PATH,
-                     US_CROSSREFERENCE_GRAPH_PATH, US_REFERENCE_PARSED_PATH,
-                     US_SNAPSHOT_MAPPING_EDGELIST_PATH)
+from legal_data_clustering.statics import (ALL_YEARS, DE_CD_CLUSTER_EVOLUTION_INSPECTION_PATH,
+                                           DE_CD_CLUSTER_EVOLUTION_MAPPINGS_PATH,
+                                           DE_CD_CLUSTER_EVOLUTION_PATH,
+                                           DE_CD_CLUSTER_INSPECTION_PATH, DE_CD_CLUSTER_PATH,
+                                           DE_CD_CLUSTER_TEXTS_PATH, DE_CD_PREPROCESSED_GRAPH_PATH,
+                                           DE_CROSSREFERENCE_GRAPH_PATH, DE_DECISIONS_NETWORK,
+                                           DE_REFERENCE_PARSED_PATH,
+                                           DE_SNAPSHOT_MAPPING_EDGELIST_PATH,
+                                           US_CD_CLUSTER_EVOLUTION_INSPECTION_PATH,
+                                           US_CD_CLUSTER_EVOLUTION_MAPPINGS_PATH,
+                                           US_CD_CLUSTER_EVOLUTION_PATH,
+                                           US_CD_CLUSTER_INSPECTION_PATH, US_CD_CLUSTER_PATH,
+                                           US_CD_CLUSTER_TEXTS_PATH, US_CD_PREPROCESSED_GRAPH_PATH,
+                                           US_CROSSREFERENCE_GRAPH_PATH, US_REFERENCE_PARSED_PATH,
+                                           US_SNAPSHOT_MAPPING_EDGELIST_PATH)
 
 if __name__ == "__main__":
     parser = get_parser()
