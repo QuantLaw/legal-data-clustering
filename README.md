@@ -31,9 +31,9 @@ One option is to generate the required data yourself using
 https://github.com/QuantLaw/legal-data-preprocessing (also available
 at http://dx.doi.org/10.5281/zenodo.4070773 .)
 
-Another option is to use the generated data from  [Preprocessed Input Data for *Sci. Rep.* **10** (2020)](http://dx.doi.org/10.5281/zenodo.4070767)
-This repository also contains the clustering results. To execute the clustering you
-only need the following directories. The other directories should be removed as otherwise
+Another option is to use the generated data from  [Preprocessed Input Data for *Sci. Rep.* **10** (2020)](http://dx.doi.org/10.5281/zenodo.4070767).
+This repository also contains the clustering results. To execute the clustering, you
+only need the following directories, other directories should be removed as otherwise
 clustering steps might be skipped.
 
 Required files for Germany relative to this repository
@@ -51,5 +51,5 @@ Required files for USA relative to this repository
 
 ### Run
 
-Execute `./run_example_configs.sh` to preprocess the graphs in multiple
-configurations, cluster them, map the clusterings over all available years.
+Run `./run_example_configs.sh` to preprocess the graphs in multiple
+configurations, cluster them and map the clusterings over all available years.
