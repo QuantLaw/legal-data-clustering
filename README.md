@@ -25,7 +25,7 @@ Related Data: [Preprocessed Input Data for *Sci. Rep.* **10** (2020)](http://dx.
 
 ## Usage
 
-### Download or generate the data
+### Download or Generate the Data
 
 One option is to generate the required data yourself using
 https://github.com/QuantLaw/legal-data-preprocessing (also available
@@ -52,4 +52,17 @@ Required files for USA relative to this repository
 ### Run
 
 Run `./run_example_configs.sh` to preprocess the graphs in multiple
-configurations, cluster them and map the clusterings over all available years.
+configurations, cluster them, and map the clusterings over all available years.
+
+The following steps will be executed:
+
+1. **Preprocessing** Simplify the graphs so that they can serve as input for
+    clustering algorithms.
+2. **Cluster** Perform the clustering with infomap or louvain.
+3. **Cluster Texts** Collect the text for each cluster. (This step can only be performed
+    if the text data is available [../legal-networks-data/{us,de}/2_xml].)
+4. **Cluster Evolution Mappings** Map the clusters over time.
+5. **Cluster Evolution Graph** Create a graph with clusters as nodes and edges indicating
+    the dynamics of nodes between snapshots.
+6. **Cluster Inspection** Inspect the content of individual clusters.
+7. **Cluster Evolution Inspection** Inspect the content of cluster families.
