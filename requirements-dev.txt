@@ -10,4 +10,3 @@ pre-commit
 python-louvain
 quantlaw
 regex
-textdistance
