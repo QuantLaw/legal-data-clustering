@@ -52,12 +52,12 @@ def cd_cluster_evolution_inspection(config, dataset, source_folder, target_folde
     families = cluster_families(G, 0.15)
 
     toc = "<h1>TOC</h1><table><th>Index</th><th>Leading cluster</th>\n"
-    for idx, family_nodes in enumerate(families[:20]):
+    for idx, family_nodes in enumerate(families[:100]):
         toc += f'<tr><td><a href="#idx_{1}">Family {idx}</a></td><td> – <a href="#leading_{family_nodes[0]}">{family_nodes[0]}</a></td></li>\n'
     toc += "</table>\n\n"
 
     content = "<h1>Content</h1>"
-    for idx, family_nodes in enumerate(families[:20]):
+    for idx, family_nodes in enumerate(families[:100]):
         content += f'<h2><a name="idx_{idx}"></a><a href="#top">Family {idx} – {family_nodes[0]}</a></h2>\n'
         content += '<div style="padding: 0 40px">'
 
