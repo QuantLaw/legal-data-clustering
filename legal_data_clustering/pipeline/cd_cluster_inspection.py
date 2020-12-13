@@ -69,7 +69,7 @@ def cd_cluster_inspection(
     """
 
     community_tokens_n = [
-        sum(clustering.graph.nodes[n]["tokens_n"] for n in nodes)
+        sum(clustering.graph.nodes[n].get("tokens_n", 0) for n in nodes)
         for nodes in clustering.communities
     ]
 
@@ -85,7 +85,7 @@ def cd_cluster_inspection(
         data = sorted(
             [
                 (
-                    clustering.graph.nodes[n]["tokens_n"],
+                    clustering.graph.nodes[n].get("tokens_n", 0),
                     get_heading_path(G_hierarchy, n),
                 )
                 for n in clustering.communities[community_id]

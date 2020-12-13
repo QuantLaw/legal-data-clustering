@@ -46,7 +46,7 @@ python-dateutil==2.8.1
 python-louvain==0.14
 pytz==2020.1
 PyYAML==5.3.1
-quantlaw==0.0.1
+quantlaw==0.0.4
 regex==2020.10.11
 requests==2.24.0
 scikit-learn==0.23.2

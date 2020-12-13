@@ -7,7 +7,7 @@ import networkx as nx
 
 from legal_data_clustering.utils.nodes_merging import quotient_graph_with_merge
 from quantlaw.utils.files import ensure_exists, list_dir
-from quantlaw.utils.networkx import hierarchy_graph
+from quantlaw.utils.networkx import hierarchy_graph, load_graph_from_csv_files
 
 
 def filename_for_mapping(mapping):
@@ -21,8 +21,8 @@ def cd_cluster_evolution_mappings_prepare(
 
     subseqitems_snapshots = [
         f.split(".")[0]
-        for f in list_dir(f"{source_folder}/subseqitems/", ".gpickle.gz")
-    ]
+        for f in list_dir(f"{source_folder}/", ".edges.csv.gz")
+    ] # fix
 
     # get configs
     mappings = [
@@ -49,15 +49,12 @@ def cd_cluster_evolution_mappings(item, source_folder, target_folder, dataset):
     seqitems_path = os.path.join(
         source_folder, "seqitems", item["snapshot"] + ".gpickle.gz"
     )
-    subseqitems_path = os.path.join(
-        source_folder, "subseqitems", item["snapshot"] + ".gpickle.gz"
-    )
 
     merged_nodes, node_seqitem_counts = get_merged_nodes(
         seqitems_path, item["pp_merge"]
     )
 
-    G = nx.read_gpickle(subseqitems_path)
+    G = load_graph_from_csv_files(source_folder, item["snapshot"], filter=None)
     hierarchy_G = hierarchy_graph(G)
     hierarchy_G_degrees = dict(hierarchy_G.out_degree())
 
@@ -112,8 +109,12 @@ def get_merged_nodes(seqitems_path, pp_merge):
 
     nodes_mapping_inversed = defaultdict(list)
     for node, parent in nodes_mapping.items():
-        if G.nodes[node]["level"] != -1 and G.nodes[node]["type"] == "seqitem":
-            nodes_mapping_inversed[parent].append(node)
+        try:
+            if G.nodes[node].get("level") != -1 and G.nodes[node]["type"] == "seqitem":
+                nodes_mapping_inversed[parent].append(node)
+        except:
+            print(node)
+            raise
 
     node_seqitem_counts = {n: len(v) for n, v in nodes_mapping_inversed.items()}
 

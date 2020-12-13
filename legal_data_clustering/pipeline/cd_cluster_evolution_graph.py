@@ -89,7 +89,7 @@ def cd_cluster_evolution_graph(
         for community_key, community_nodes in enumerate(clustering.communities):
             community_nodes_sorted = sorted(
                 community_nodes,
-                key=lambda n: preprocessed_mappings["tokens_n"][n],
+                key=lambda n: preprocessed_mappings["tokens_n"].get(n, 0),
                 reverse=True,
             )
             for n in community_nodes_sorted:
@@ -227,7 +227,7 @@ def get_config_clustering_files(config, source_folder):
 def get_community_sizes(communities, node_sizes):
     community_sizes = dict()
     for community_id, nodes in enumerate(communities):
-        community_sizes[community_id] = sum([node_sizes[n] for n in nodes])
+        community_sizes[community_id] = sum([node_sizes.get(n, 0) for n in nodes])
     return community_sizes
 
 
