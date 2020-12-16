@@ -3,23 +3,29 @@ import os
 from collections import Counter, defaultdict
 
 import networkx as nx
-
 from cdlib import NodeClustering, readwrite
+from quantlaw.utils.networkx import get_leaves, hierarchy_graph
+
+from legal_data_clustering.utils.config_handling import (
+    simplify_config_for_preprocessed_graph,
+)
 from legal_data_clustering.utils.config_parsing import (
     filename_for_pp_config,
     get_config_from_filename,
 )
-from legal_data_clustering.utils.config_handling import (
-    simplify_config_for_preprocessed_graph,
-)
-from quantlaw.utils.networkx import get_leaves, hierarchy_graph
 from legal_data_clustering.utils.statics import (
     DE_CD_CLUSTER_PATH,
     DE_CD_PREPROCESSED_GRAPH_PATH,
     DE_CROSSREFERENCE_GRAPH_PATH,
+    DE_REG_CD_CLUSTER_PATH,
+    DE_REG_CD_PREPROCESSED_GRAPH_PATH,
+    DE_REG_CROSSREFERENCE_GRAPH_PATH,
     US_CD_CLUSTER_PATH,
     US_CD_PREPROCESSED_GRAPH_PATH,
     US_CROSSREFERENCE_GRAPH_PATH,
+    US_REG_CD_CLUSTER_PATH,
+    US_REG_CD_PREPROCESSED_GRAPH_PATH,
+    US_REG_CROSSREFERENCE_GRAPH_PATH,
 )
 
 
@@ -31,13 +37,17 @@ def add_communities_to_graph(clustering: NodeClustering):
     cluster_object_attrs = {}
     hG = hierarchy_graph(clustering.graph)
     for node_key, community_ids in clustering.to_node_community_map().items():
-        node_with_descendants = [node_key] + [n for n in nx.descendants(hG, node_key)]
+        node_with_descendants = [node_key] + [
+            n for n in nx.descendants(hG, node_key)
+        ]
         for node in node_with_descendants:
             community_attrs[node] = community_ids
         cluster_object_attrs[node] = True
 
     nx.set_node_attributes(clustering.graph, community_attrs, "communities")
-    nx.set_node_attributes(clustering.graph, cluster_object_attrs, "clusterobject")
+    nx.set_node_attributes(
+        clustering.graph, cluster_object_attrs, "clusterobject"
+    )
 
 
 def add_community_to_graph(clustering: NodeClustering):
@@ -57,7 +67,9 @@ def add_community_to_graph(clustering: NodeClustering):
     nx.set_node_attributes(clustering.graph, community, "community")
 
 
-def get_clustering_result(cluster_path, dataset, graph_type, path_prefix=""):
+def get_clustering_result(
+    cluster_path, dataset, graph_type, path_prefix="", regulations=False
+):
     """
     read the clustering result and the respective graph.
     ::param cluster_path: path of the cdlib.readwrite.write_community_json output
@@ -74,17 +86,33 @@ def get_clustering_result(cluster_path, dataset, graph_type, path_prefix=""):
             **simplify_config_for_preprocessed_graph(config)
         )
         graph_path = path_prefix + (
-            US_CD_PREPROCESSED_GRAPH_PATH
+            (
+                US_REG_CD_PREPROCESSED_GRAPH_PATH
+                if regulations
+                else US_CD_PREPROCESSED_GRAPH_PATH
+            )
             if dataset.lower() == "us"
-            else DE_CD_PREPROCESSED_GRAPH_PATH
+            else (
+                DE_REG_CD_PREPROCESSED_GRAPH_PATH
+                if regulations
+                else DE_CD_PREPROCESSED_GRAPH_PATH
+            )
         )
         graph_path += f"/{graph_filename}"
         G = nx.read_gpickle(graph_path)
     elif graph_type in ["seqitems", "subseqitems"]:
         graph_path = path_prefix + (
-            US_CROSSREFERENCE_GRAPH_PATH
+            (
+                US_REG_CROSSREFERENCE_GRAPH_PATH
+                if regulations
+                else US_CROSSREFERENCE_GRAPH_PATH
+            )
             if dataset.lower() == "us"
-            else DE_CROSSREFERENCE_GRAPH_PATH
+            else (
+                DE_REG_CROSSREFERENCE_GRAPH_PATH
+                if regulations
+                else DE_CROSSREFERENCE_GRAPH_PATH
+            )
         )
 
         graph_path += f"/{graph_type}/{snapshot}.gpickle.gz"
@@ -95,7 +123,13 @@ def get_clustering_result(cluster_path, dataset, graph_type, path_prefix=""):
 
     clustering = readwrite.read_community_json(
         path_prefix
-        + (US_CD_CLUSTER_PATH if dataset.lower() == "us" else DE_CD_CLUSTER_PATH)
+        + (
+            (US_REG_CD_CLUSTER_PATH if regulations else US_CD_CLUSTER_PATH)
+            if dataset.lower() == "us"
+            else (
+                DE_REG_CD_CLUSTER_PATH if regulations else DE_CD_CLUSTER_PATH
+            )
+        )
         + "/"
         + os.path.split(cluster_path)[-1]
     )
@@ -106,7 +140,9 @@ def get_clustering_result(cluster_path, dataset, graph_type, path_prefix=""):
     return clustering
 
 
-def get_community_law_name_counters(clustering: NodeClustering, count_level: str):
+def get_community_law_name_counters(
+    clustering: NodeClustering, count_level: str
+):
     """
     Counting the law_names in each cluster.
     :param clustering:
@@ -154,7 +190,11 @@ def get_leaves_with_communities(G):
 
 def get_community_ids(clustering: NodeClustering):
     return sorted(
-        set(itertools.chain.from_iterable(clustering.to_node_community_map().values()))
+        set(
+            itertools.chain.from_iterable(
+                clustering.to_node_community_map().values()
+            )
+        )
     )
 
 
@@ -166,7 +206,9 @@ def quotient_decision_graph(G, merge_decisions, merge_statutes):
         documents = [n for n, b in G.nodes(data="type") if b == "document"]
         H.add_nodes_from([(n.split("_")[0], G.nodes[n]) for n in documents])
     else:
-        decisions = [n for n, b in G.nodes(data="bipartite") if b == "decision"]
+        decisions = [
+            n for n, b in G.nodes(data="bipartite") if b == "decision"
+        ]
         H.add_nodes_from([(n, G.nodes[n]) for n in decisions])
 
         containment = [
@@ -178,16 +220,24 @@ def quotient_decision_graph(G, merge_decisions, merge_statutes):
 
     # Statute nodes
     if merge_statutes:
-        statute_nodes = [n for n, b in G.nodes(data="bipartite") if b == "statute"]
-        statute_nodes_merged = list(sorted({n.split("_")[0] for n in statute_nodes}))
+        statute_nodes = [
+            n for n, b in G.nodes(data="bipartite") if b == "statute"
+        ]
+        statute_nodes_merged = list(
+            sorted({n.split("_")[0] for n in statute_nodes})
+        )
         H.add_nodes_from(statute_nodes_merged, bipartite="statute")
     else:
-        statute_nodes = [n for n, b in G.nodes(data="bipartite") if b == "statute"]
+        statute_nodes = [
+            n for n, b in G.nodes(data="bipartite") if b == "statute"
+        ]
         H.add_nodes_from([(n, G.nodes[n]) for n in statute_nodes])
 
     # Reference edges
     references = [
-        [u, v, d] for u, v, d in G.edges(data=True) if d["edge_type"] == "reference"
+        [u, v, d]
+        for u, v, d in G.edges(data=True)
+        if d["edge_type"] == "reference"
     ]
 
     references_dict = defaultdict(int)

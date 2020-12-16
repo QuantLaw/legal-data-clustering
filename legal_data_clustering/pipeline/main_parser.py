@@ -4,7 +4,9 @@ import argparse
 def get_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument("dataset", help="select a dataset: DE or US")
-    parser.add_argument("steps", nargs="+", help="select a step to perform by name")
+    parser.add_argument(
+        "steps", nargs="+", help="select a step to perform by name"
+    )
     parser.add_argument(
         "--single-process",
         dest="use_multiprocessing",
@@ -32,6 +34,15 @@ def get_parser():
             "Eg. 2010-01-01 for de dataset or 2010 for us dataset. "
             "To run on whole research window: all"
         ),
+    )
+    parser.add_argument(
+        "-r",
+        "--regulations",
+        dest="regulations",
+        action="store_const",
+        const=True,
+        default=False,
+        help="Include regulations",
     )
 
     # Preprocessing args
