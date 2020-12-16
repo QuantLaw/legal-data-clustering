@@ -4,8 +4,10 @@ import networkx as nx
 
 from legal_data_clustering.utils.config_handling import get_configs
 from legal_data_clustering.utils.config_parsing import filename_for_pp_config
-from legal_data_clustering.utils.graph_api import (cluster_families,
-                                                   get_heading_path)
+from legal_data_clustering.utils.graph_api import (
+    cluster_families,
+    get_heading_path,
+)
 from quantlaw.utils.files import ensure_exists, list_dir
 from quantlaw.utils.networkx import hierarchy_graph
 
@@ -28,7 +30,9 @@ def cd_cluster_evolution_inspection_prepare(
         configs = [
             config
             for config in configs
-            if filename_for_pp_config(snapshot="all", **config, file_ext=".htm")
+            if filename_for_pp_config(
+                snapshot="all", **config, file_ext=".htm"
+            )
             not in existing_files
         ]
     global cd_cluster_evolution_inspection_graphs
@@ -42,9 +46,13 @@ def cd_cluster_evolution_inspection_prepare(
     return configs
 
 
-def cd_cluster_evolution_inspection(config, dataset, source_folder, target_folder):
+def cd_cluster_evolution_inspection(
+    config, dataset, source_folder, target_folder
+):
     global cd_cluster_evolution_inspection_graphs
-    source_filename_base = filename_for_pp_config(snapshot="all", **config, file_ext="")
+    source_filename_base = filename_for_pp_config(
+        snapshot="all", **config, file_ext=""
+    )
 
     G = nx.read_gpickle(
         os.path.join(source_folder, source_filename_base + ".gpickle.gz")
@@ -62,7 +70,8 @@ def cd_cluster_evolution_inspection(config, dataset, source_folder, target_folde
         content += '<div style="padding: 0 40px">'
 
         family_nodes_sorted = sorted(
-            family_nodes, key=lambda x: (x.split("_")[0], family_nodes.index(x))
+            family_nodes,
+            key=lambda x: (x.split("_")[0], family_nodes.index(x)),
         )
 
         content += "<i>"

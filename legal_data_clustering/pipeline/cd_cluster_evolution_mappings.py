@@ -64,7 +64,10 @@ def cd_cluster_evolution_mappings(item, source_folder, target_folder, dataset):
     merged_nodes_leaves = [
         n
         for n in merged_nodes
-        if not any(successor in merged_nodes for successor in hierarchy_G.successors(n))
+        if not any(
+            successor in merged_nodes
+            for successor in hierarchy_G.successors(n)
+        )
     ]
     merged_nodes_descendants = {
         descendant
@@ -80,7 +83,8 @@ def cd_cluster_evolution_mappings(item, source_folder, target_folder, dataset):
                 parent_node,
                 leaf,
                 nx.ancestors(hierarchy_G, leaf),
-                set(nx.ancestors(hierarchy_G, leaf)) & merged_nodes_descendants,
+                set(nx.ancestors(hierarchy_G, leaf))
+                & merged_nodes_descendants,
             )
 
     prepared_data = dict(
@@ -90,7 +94,9 @@ def cd_cluster_evolution_mappings(item, source_folder, target_folder, dataset):
         seqitem_counts=node_seqitem_counts,
     )
 
-    with open(os.path.join(target_folder, filename_for_mapping(item)), "wb") as f:
+    with open(
+        os.path.join(target_folder, filename_for_mapping(item)), "wb"
+    ) as f:
         pickle.dump(prepared_data, f)
 
 
@@ -116,6 +122,8 @@ def get_merged_nodes(seqitems_path, pp_merge):
             print(node)
             raise
 
-    node_seqitem_counts = {n: len(v) for n, v in nodes_mapping_inversed.items()}
+    node_seqitem_counts = {
+        n: len(v) for n, v in nodes_mapping_inversed.items()
+    }
 
     return sorted(set(nodes_mapping.values())), node_seqitem_counts

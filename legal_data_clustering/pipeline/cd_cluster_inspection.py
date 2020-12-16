@@ -1,10 +1,14 @@
-from legal_data_clustering.utils.config_handling import \
-    get_configs_for_snapshots
-from legal_data_clustering.utils.config_parsing import filename_for_pp_config
-from legal_data_clustering.utils.graph_api import (get_clustering_result,
-                                                   get_heading_path,
-                                                   hierarchy_graph)
 from quantlaw.utils.files import ensure_exists, list_dir
+
+from legal_data_clustering.utils.config_handling import (
+    get_configs_for_snapshots,
+)
+from legal_data_clustering.utils.config_parsing import filename_for_pp_config
+from legal_data_clustering.utils.graph_api import (
+    get_clustering_result,
+    get_heading_path,
+    hierarchy_graph,
+)
 
 source_file_ext = ".json"
 
@@ -18,7 +22,8 @@ def cd_cluster_inspection_prepare(
     # Check if source graphs exist
     existing_source_files = set(list_dir(source_folder, source_file_ext))
     required_source_files = {
-        filename_for_pp_config(**item, file_ext=source_file_ext) for item in items
+        filename_for_pp_config(**item, file_ext=source_file_ext)
+        for item in items
     }
     missing_source_files = required_source_files - existing_source_files
     if len(missing_source_files):
@@ -31,7 +36,8 @@ def cd_cluster_inspection_prepare(
         items = [
             item
             for item in items
-            if filename_for_pp_config(**item, file_ext=".htm") not in existing_files
+            if filename_for_pp_config(**item, file_ext=".htm")
+            not in existing_files
         ]
 
     return items
@@ -42,6 +48,7 @@ def cd_cluster_inspection(
     dataset,
     source_folder,
     target_folder,
+    regulations,
 ):
     source_filename_base = filename_for_pp_config(**config, file_ext="")
 
@@ -49,6 +56,7 @@ def cd_cluster_inspection(
         f"{source_folder}/{source_filename_base}{source_file_ext}",
         dataset,
         graph_type="seqitems",
+        regulations=regulations,
     )
 
     content = """<!DOCTYPE html>
