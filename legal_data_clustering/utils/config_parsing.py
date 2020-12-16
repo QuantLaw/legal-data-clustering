@@ -41,7 +41,9 @@ def get_config_from_filename(filename):
         snapshot=components[0],
         pp_ratio=convert_filename_component_to_number(components[1]),
         pp_decay=convert_filename_component_to_number(components[2]),
-        pp_merge=convert_filename_component_to_number(components[3], value_type=int),
+        pp_merge=convert_filename_component_to_number(
+            components[3], value_type=int
+        ),
     )
     if len(components) > 4:
         for component in components[4:]:
@@ -51,7 +53,9 @@ def get_config_from_filename(filename):
 
 def modify_config(config, component):
     if component.startswith("o"):
-        config["pp_co_occurrence"] = convert_filename_component_to_number(component[1:])
+        config["pp_co_occurrence"] = convert_filename_component_to_number(
+            component[1:]
+        )
     if component.startswith("t-"):
         config["pp_co_occurrence_type"] = component[len("t-") :]
     if component.startswith("a-"):
@@ -61,7 +65,9 @@ def modify_config(config, component):
             component[1:], value_type=int
         )
     if component.startswith("m"):
-        config["markov_time"] = convert_filename_component_to_number(component[1:])
+        config["markov_time"] = convert_filename_component_to_number(
+            component[1:]
+        )
     if component.startswith("s"):
         config["seed"] = convert_filename_component_to_number(
             component[1:], value_type=int

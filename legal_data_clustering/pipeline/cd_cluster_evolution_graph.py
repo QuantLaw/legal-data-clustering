@@ -57,7 +57,9 @@ def cd_cluster_evolution_graph(
 
     B = nx.DiGraph()
 
-    for config_clustering_file, snapshot in zip(config_clustering_files, snapshots):
+    for config_clustering_file, snapshot in zip(
+        config_clustering_files, snapshots
+    ):
         # Add nodes to graph
 
         clustering = readwrite.read_community_json(
@@ -66,7 +68,8 @@ def cd_cluster_evolution_graph(
 
         with open(
             os.path.join(
-                subseqitem_mapping_folder, f'{snapshot}_{config["pp_merge"]}.pickle'
+                subseqitem_mapping_folder,
+                f'{snapshot}_{config["pp_merge"]}.pickle',
             ),
             "rb",
         ) as f:
@@ -76,7 +79,9 @@ def cd_cluster_evolution_graph(
             preprocessed_mappings, clustering.communities
         )
         most_common_dict = {
-            k: ",".join([f"{elem_k},{count}" for elem_k, count in v.most_common()])
+            k: ",".join(
+                [f"{elem_k},{count}" for elem_k, count in v.most_common()]
+            )
             for k, v in counters_dict.items()
         }
         chars_n_dict = get_community_sizes(
@@ -86,7 +91,9 @@ def cd_cluster_evolution_graph(
             clustering.communities, preprocessed_mappings["tokens_n"]
         )
 
-        for community_key, community_nodes in enumerate(clustering.communities):
+        for community_key, community_nodes in enumerate(
+            clustering.communities
+        ):
             community_nodes_sorted = sorted(
                 community_nodes,
                 key=lambda n: preprocessed_mappings["tokens_n"][n],
@@ -107,7 +114,9 @@ def cd_cluster_evolution_graph(
             [
                 n
                 for rolled_up_node in community_nodes
-                for n in preprocessed_mappings["subseqitems_mapping"][rolled_up_node]
+                for n in preprocessed_mappings["subseqitems_mapping"][
+                    rolled_up_node
+                ]
             ]
             for community_nodes in clustering.communities
         ]
@@ -120,7 +129,9 @@ def cd_cluster_evolution_graph(
 
         if not first:
 
-            with open(f"{snaphot_mapping_folder}/{prev_snapshot}_{snapshot}.json") as f:
+            with open(
+                f"{snaphot_mapping_folder}/{prev_snapshot}_{snapshot}.json"
+            ) as f:
                 mapping = json.load(f)
 
             # draw edges
@@ -128,15 +139,21 @@ def cd_cluster_evolution_graph(
             edges_charns_n = defaultdict(int)
             for prev_leaf, leaf in mapping.items():
                 try:
-                    prev_community_id = prev_community_id_for_rolled_down[prev_leaf]
+                    prev_community_id = prev_community_id_for_rolled_down[
+                        prev_leaf
+                    ]
                 except KeyError as err:
-                    report_mapping_error(err, prev_preprocessed_mappings["tokens_n"])
+                    report_mapping_error(
+                        err, prev_preprocessed_mappings["tokens_n"]
+                    )
                     continue
 
                 try:
                     community_id = community_id_for_rolled_down[leaf]
                 except KeyError as err:
-                    report_mapping_error(err, preprocessed_mappings["tokens_n"])
+                    report_mapping_error(
+                        err, preprocessed_mappings["tokens_n"]
+                    )
                     continue
 
                 prev_community_name = f"{prev_snapshot}_{prev_community_id}"
@@ -163,7 +180,9 @@ def cd_cluster_evolution_graph(
     )
 
 
-def get_cluster_law_names_counting_seqitems(preprocessed_mappings, communities):
+def get_cluster_law_names_counting_seqitems(
+    preprocessed_mappings, communities
+):
     counters = dict()
     for community_id, community_nodes in enumerate(communities):
         counters[community_id] = Counter(
@@ -171,7 +190,9 @@ def get_cluster_law_names_counting_seqitems(preprocessed_mappings, communities):
                 "_".join(community_node.split("_")[:-1])
                 for community_node in community_nodes
                 for _ in range(
-                    preprocessed_mappings["seqitem_counts"].get(community_node, 0)
+                    preprocessed_mappings["seqitem_counts"].get(
+                        community_node, 0
+                    )
                 )
             ]
         )
@@ -197,7 +218,9 @@ def get_configs_no_overwrite(configs, existing_files):
     configs = [
         config
         for config in configs
-        if filename_for_pp_config(snapshot="all", **config, file_ext=".gpickle.gz")
+        if filename_for_pp_config(
+            snapshot="all", **config, file_ext=".gpickle.gz"
+        )
         not in existing_files
     ]
     return configs

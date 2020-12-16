@@ -66,7 +66,9 @@ def infomap(
 
     options_compiled = options + f" --markov-time {markov_time}"
     if number_of_modules:
-        options_compiled += f" --preferred-number-of-modules {number_of_modules}"
+        options_compiled += (
+            f" --preferred-number-of-modules {number_of_modules}"
+        )
     if seed is not None:
         options_compiled += f" --seed {seed}"
     if directed:
@@ -98,7 +100,10 @@ def infomap(
     coms_infomap = [list(c) for c in coms_to_node.values()]
 
     clustering = NodeClustering(
-        coms_infomap, g, "Infomap", method_parameters={"options": options, "seed": seed}
+        coms_infomap,
+        g,
+        "Infomap",
+        method_parameters={"options": options, "seed": seed},
     )
 
     if not return_tree:
@@ -216,7 +221,9 @@ def louvain(g, weight="weight", resolution=1.0, seed=None, return_tree=False):
                     current_counts["tree"] += 1
 
                     D.add_edge("root", first_level_key)
-                    graph_key_for_nr[(parent_level, parent_nr)] = first_level_key
+                    graph_key_for_nr[
+                        (parent_level, parent_nr)
+                    ] = first_level_key
 
                 parent_key = graph_key_for_nr[(parent_level, parent_nr)]
 
@@ -241,7 +248,9 @@ def missings_nodes_as_additional_clusters(clustering: NodeClustering):
     :param clustering: NodeClustering
     :return: NodeClustering
     """
-    nodes_clustered = set(itertools.chain.from_iterable(clustering.communities))
+    nodes_clustered = set(
+        itertools.chain.from_iterable(clustering.communities)
+    )
     missings_nodes = set(clustering.graph.nodes) - nodes_clustered
     extended_communities = clustering.communities.copy()
     extended_communities.extend([[n] for n in missings_nodes])

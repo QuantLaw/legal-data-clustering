@@ -6,10 +6,14 @@ import networkx as nx
 from cdlib import NodeClustering
 from cdlib.readwrite import write_community_json
 from legal_data_clustering.pipeline import cdlib_custom_algorithms
-from legal_data_clustering.pipeline.cdlib_custom_algorithms import \
-    missings_nodes_as_additional_clusters
+from legal_data_clustering.pipeline.cdlib_custom_algorithms import (
+    missings_nodes_as_additional_clusters,
+)
 from legal_data_clustering.utils.config_handling import (
-    check_for_missing_files, get_configs_for_snapshots, get_no_overwrite_items)
+    check_for_missing_files,
+    get_configs_for_snapshots,
+    get_no_overwrite_items,
+)
 from legal_data_clustering.utils.config_parsing import filename_for_pp_config
 from quantlaw.utils.files import ensure_exists, list_dir
 
@@ -17,7 +21,9 @@ source_file_ext = ".gpickle.gz"
 target_file_ext = ".json"
 
 
-def cd_cluster_prepare(overwrite, snapshots, pp_configs, source_folder, target_folder):
+def cd_cluster_prepare(
+    overwrite, snapshots, pp_configs, source_folder, target_folder
+):
     ensure_exists(target_folder)
     items = get_configs_for_snapshots(snapshots, pp_configs)
 
@@ -76,11 +82,15 @@ def cd_cluster(config, source_folder, target_folder):
 
     else:
         clustering = consensus_clustering(g, config)
-        target_filename = filename_for_pp_config(**config, file_ext="target_file_ext")
+        target_filename = filename_for_pp_config(
+            **config, file_ext="target_file_ext"
+        )
 
     clustering = missings_nodes_as_additional_clusters(clustering)
 
-    target_filename = filename_for_pp_config(**config, file_ext=target_file_ext)
+    target_filename = filename_for_pp_config(
+        **config, file_ext=target_file_ext
+    )
     write_community_json(clustering, f"{target_folder}/{target_filename}")
 
 
