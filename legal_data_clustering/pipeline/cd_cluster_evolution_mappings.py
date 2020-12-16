@@ -1,13 +1,12 @@
 import os
 import pickle
-from bisect import bisect_left
-from collections import defaultdict
+import re
+from collections import Counter
 
 import networkx as nx
+import pandas as pd
 
-from legal_data_clustering.utils.nodes_merging import quotient_graph_with_merge
 from quantlaw.utils.files import ensure_exists, list_dir
-from quantlaw.utils.networkx import hierarchy_graph, load_graph_from_csv_files
 
 
 def filename_for_mapping(mapping):
@@ -45,56 +44,60 @@ def cd_cluster_evolution_mappings_prepare(
     return sorted(mappings, key=str)
 
 
-def cd_cluster_evolution_mappings(item, source_folder, target_folder, dataset):
-    seqitems_path = os.path.join(
-        source_folder, "seqitems", item["snapshot"] + ".gpickle.gz"
-    )
+def cd_cluster_evolution_mappings(item, source_folder, preprocessed_graph_folder, target_folder):
+    pattern = re.compile(re.escape(item["snapshot"]) + r'_[0-9\-]+_[0-9\-]+_' + re.escape(str(item["pp_merge"]).replace(".", "-") + '.gpickle.gz'))
+    filenames = sorted([
+        filename for filename in os.listdir(preprocessed_graph_folder)
+        if pattern.fullmatch(filename)
+    ])
+    if len(filenames) > 1:
+        print('Found multiple matching preprocessed graphs. Taking', filenames[0])
+    elif not filenames:
+        raise Exception('Not preprocessed graphs found for', pattern)
+    filename = filenames[0]
 
-    merged_nodes, node_seqitem_counts = get_merged_nodes(
-        seqitems_path, item["pp_merge"]
-    )
+    G = nx.read_gpickle(os.path.join(
+        preprocessed_graph_folder, filename
 
-    hierarchy_G = load_graph_from_csv_files(
+    ))
+    cluster_level_nodes = set(G.nodes())
+    del G
+
+    df_nodes = pd.read_csv(os.path.join(
         source_folder,
-        item["snapshot"],
-        filter=None,
-        filter_by_edge_types=["containment"]
+        item["snapshot"] + '.nodes.csv.gz'
+    ))
+    df_edges = pd.read_csv(os.path.join(
+        source_folder,
+        item["snapshot"] + '.edges.csv.gz'
+    ))
+    containment_edges = df_edges[df_edges.edge_type == 'containment']
+    parents = {v: u for v, u in zip(containment_edges.v, containment_edges.u)}
+
+
+    non_contracted_nodes = nodes_with_parents(cluster_level_nodes, parents)
+    subseqitems_mapping = {k: [] for k in non_contracted_nodes}
+
+    leaves = set(df_nodes.key) - set(containment_edges.u)
+
+    for key in leaves:
+        contracted_to = is_contracted(key, parents, cluster_level_nodes)
+        if contracted_to:
+            subseqitems_mapping[contracted_to].append(key)
+
+    node_seqitem_counts = Counter(
+        is_contracted(key, parents, cluster_level_nodes)
+        for key in df_nodes[df_nodes.type == 'seqitem'].key
     )
-    hierarchy_G_degrees = dict(hierarchy_G.out_degree())
+    node_seqitem_counts = dict(node_seqitem_counts)
 
-    leaves = [n for n, degree in hierarchy_G_degrees.items() if degree == 0]
-
-    merged_nodes = sorted(merged_nodes)
-    merged_nodes_leaves = [
-        n
-        for n in merged_nodes
-        if not any(
-            successor in merged_nodes
-            for successor in hierarchy_G.successors(n)
-        )
-    ]
-    merged_nodes_descendants = {
-        descendant
-        for n in merged_nodes_leaves
-        for descendant in nx.descendants(hierarchy_G, n)
-    }
-    subseqitems_mapping = {n: list() for n in merged_nodes}
-    for leaf in leaves:
-        if leaf in merged_nodes_descendants:
-            parent_node = find_lt(merged_nodes, leaf)
-            subseqitems_mapping[parent_node].append(leaf)
-            assert parent_node in nx.ancestors(hierarchy_G, leaf), (
-                parent_node,
-                leaf,
-                nx.ancestors(hierarchy_G, leaf),
-                set(nx.ancestors(hierarchy_G, leaf))
-                & merged_nodes_descendants,
-            )
+    tokens_n = {k: v for k, v in zip(df_nodes.key, df_nodes.tokens_n)}
+    chars_n = {k: v for k, v in zip(df_nodes.key, df_nodes.chars_n)}
 
     prepared_data = dict(
         subseqitems_mapping=subseqitems_mapping,
-        tokens_n=dict(nx.get_node_attributes(G, "tokens_n")),
-        chars_n=dict(nx.get_node_attributes(G, "chars_n")),
+        tokens_n=tokens_n,
+        chars_n=chars_n,
         seqitem_counts=node_seqitem_counts,
     )
 
@@ -104,30 +107,21 @@ def cd_cluster_evolution_mappings(item, source_folder, target_folder, dataset):
         pickle.dump(prepared_data, f)
 
 
-def find_lt(a, x):
-    "Find rightmost value less than x"
-    i = bisect_left(a, x)
-    if i:
-        return a[i - 1]
-    raise ValueError
+def is_contracted(node, parents, cluster_level_nodes):
+    parent = parents.get(node)
+    if parent is None:
+        return None
+    elif parent in cluster_level_nodes:
+        return parent
+    else:
+        return is_contracted(parent, parents, cluster_level_nodes)
 
-
-def get_merged_nodes(seqitems_path, pp_merge):
-    seqitems_path = seqitems_path
-    G = nx.read_gpickle(seqitems_path)
-    Gm, nodes_mapping = quotient_graph_with_merge(G, merge_threshold=pp_merge)
-
-    nodes_mapping_inversed = defaultdict(list)
-    for node, parent in nodes_mapping.items():
-        try:
-            if G.nodes[node].get("level") != -1 and G.nodes[node]["type"] == "seqitem":
-                nodes_mapping_inversed[parent].append(node)
-        except:
-            print(node)
-            raise
-
-    node_seqitem_counts = {
-        n: len(v) for n, v in nodes_mapping_inversed.items()
-    }
-
-    return sorted(set(nodes_mapping.values())), node_seqitem_counts
+def nodes_with_parents(nodes, parents):
+    nodes = list(nodes)
+    idx = 0
+    while idx < len(nodes):
+        parent = parents.get(nodes[idx])
+        if parent and parent not in nodes:
+            nodes.append(parent)
+        idx += 1
+    return nodes

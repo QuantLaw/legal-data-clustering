@@ -278,6 +278,11 @@ if __name__ == "__main__":
                 if regulations
                 else DE_CROSSREFERENCE_GRAPH_PATH
             )
+            preprocessed_folder = (
+                DE_REG_CD_PREPROCESSED_GRAPH_PATH
+                if regulations
+                else DE_CD_PREPROCESSED_GRAPH_PATH
+            )
             target_folder = (
                 DE_REG_CD_CLUSTER_EVOLUTION_MAPPINGS_PATH
                 if regulations
@@ -288,6 +293,11 @@ if __name__ == "__main__":
                 US_REG_CROSSREFERENCE_GRAPH_PATH
                 if regulations
                 else US_CROSSREFERENCE_GRAPH_PATH
+            )
+            preprocessed_folder = (
+                US_REG_CD_PREPROCESSED_GRAPH_PATH
+                if regulations
+                else US_CD_PREPROCESSED_GRAPH_PATH
             )
             target_folder = (
                 US_REG_CD_CLUSTER_EVOLUTION_MAPPINGS_PATH
@@ -306,7 +316,7 @@ if __name__ == "__main__":
             [],
             action_method=cd_cluster_evolution_mappings,
             use_multiprocessing=use_multiprocessing,
-            args=(source_folder, target_folder, dataset),
+            args=(source_folder, preprocessed_folder, target_folder),
             processes=2,
         )
 
