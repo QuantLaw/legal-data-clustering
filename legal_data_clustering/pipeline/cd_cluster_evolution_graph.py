@@ -10,6 +10,8 @@ from legal_data_clustering.utils.config_parsing import filename_for_pp_config
 from legal_data_clustering.utils.config_handling import get_configs
 from quantlaw.utils.files import ensure_exists, list_dir
 
+from legal_data_clustering.utils.graph_api import cluster_families
+
 
 def cd_cluster_evolution_graph_prepare(
     overwrite,
@@ -178,6 +180,15 @@ def cd_cluster_evolution_graph(
         f"{target_folder}/"
         f'{filename_for_pp_config(snapshot="all", **config, file_ext=".gpickle.gz")}',
     )
+
+    # Write families
+    families = cluster_families(B, threshold=.15)
+    path = (
+        f"{target_folder}/"
+        f'{filename_for_pp_config(snapshot="all", **config, file_ext=".families.json")}',
+    )
+    with open(path, 'w') as f:
+        json.dump(families, f)
 
 
 def get_cluster_law_names_counting_seqitems(
