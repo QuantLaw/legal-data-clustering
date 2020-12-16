@@ -54,8 +54,12 @@ def cd_cluster_evolution_mappings(item, source_folder, target_folder, dataset):
         seqitems_path, item["pp_merge"]
     )
 
-    G = load_graph_from_csv_files(source_folder, item["snapshot"], filter=None)
-    hierarchy_G = hierarchy_graph(G)
+    hierarchy_G = load_graph_from_csv_files(
+        source_folder,
+        item["snapshot"],
+        filter=None,
+        filter_by_edge_types=["containment"]
+    )
     hierarchy_G_degrees = dict(hierarchy_G.out_degree())
 
     leaves = [n for n, degree in hierarchy_G_degrees.items() if degree == 0]
