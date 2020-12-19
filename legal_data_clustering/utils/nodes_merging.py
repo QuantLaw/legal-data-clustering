@@ -68,7 +68,7 @@ def get_merge_parent(G, node, merge_threshold=0, merge_attribute="chars_n"):
     return get_merge_parent(G, parent, merge_threshold, merge_attribute)
 
 
-chapter_buch_pattern = regex.compile(r"\w*\s*\bBuch\b|CHAPTER")
+chapter_buch_pattern = regex.compile(r"\w*\s*\bBuch\b|\[?CHAPTER|Chap\.")
 
 
 def is_root_node(G, node):
