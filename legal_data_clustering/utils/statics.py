@@ -73,8 +73,8 @@ US_REG_CD_CLUSTER_EVOLUTION_INSPECTION_PATH = (
     f"{US_REG_DATA_PATH}/15_cluster_evolution_inspection"
 )
 
-DE_REG_DATA_PATH = "../legal-networks-data/de_rvo"
-DE_REG_TEMP_DATA_PATH = "temp/de_rvo"
+DE_REG_DATA_PATH = "../legal-networks-data/de_reg"
+DE_REG_TEMP_DATA_PATH = "temp/de_reg"
 
 DE_REG_REFERENCE_PARSED_PATH = f"{DE_REG_DATA_PATH}/2_xml"
 DE_REG_CROSSREFERENCE_GRAPH_PATH = f"{DE_REG_DATA_PATH}/4_crossreference_graph"
