@@ -75,6 +75,7 @@ from legal_data_clustering.utils.statics import (
     US_REG_REFERENCE_PARSED_PATH,
     US_REG_SNAPSHOT_MAPPING_EDGELIST_PATH,
     US_SNAPSHOT_MAPPING_EDGELIST_PATH,
+    ALL_YEARS_REG,
 )
 
 if __name__ == "__main__":
@@ -105,9 +106,13 @@ if __name__ == "__main__":
 
     if "all" in snapshots:
         if dataset == "us":
-            snapshots = [f"{year}" for year in ALL_YEARS]
+            snapshots = [f"{year}" for year in (
+                ALL_YEARS_REG if regulations else ALL_YEARS
+            )]
         elif dataset == "de":
-            snapshots = [f"{year}-01-01" for year in ALL_YEARS]
+            snapshots = [f"{year}-01-01" for year in (
+                ALL_YEARS_REG if regulations else ALL_YEARS
+            )]
 
     # Validate snapshot format
     for snapshot in snapshots:
