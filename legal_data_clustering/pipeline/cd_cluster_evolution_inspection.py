@@ -61,7 +61,7 @@ def cd_cluster_evolution_inspection(
 
     toc = "<h1>TOC</h1><table><th>Index</th><th>Leading cluster</th>\n"
     for idx, family_nodes in enumerate(families[:100]):
-        toc += f'<tr><td><a href="#idx_{1}">Family {idx}</a></td><td> – <a href="#leading_{family_nodes[0]}">{family_nodes[0]}</a></td></li>\n'
+        toc += f'<tr><td><a href="#idx_{idx}">Family {idx}</a></td><td> – <a href="#leading_{family_nodes[0]}">{family_nodes[0]}</a></td></li>\n'
     toc += "</table>\n\n"
 
     content = "<h1>Content</h1>"
