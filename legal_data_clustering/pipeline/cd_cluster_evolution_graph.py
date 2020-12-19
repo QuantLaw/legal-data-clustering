@@ -185,7 +185,7 @@ def cd_cluster_evolution_graph(
     families = cluster_families(B, threshold=.15)
     path = (
         f"{target_folder}/"
-        f'{filename_for_pp_config(snapshot="all", **config, file_ext=".families.json")}',
+        f'{filename_for_pp_config(snapshot="all", **config, file_ext=".families.json")}'
     )
     with open(path, 'w') as f:
         json.dump(families, f)

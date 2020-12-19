@@ -45,9 +45,14 @@ def cd_cluster_evolution_mappings_prepare(
 
 
 def cd_cluster_evolution_mappings(item, source_folder, preprocessed_graph_folder, target_folder):
-    pattern = re.compile(re.escape(item["snapshot"]) + r'_[0-9\-]+_[0-9\-]+_' + re.escape(str(item["pp_merge"]).replace(".", "-") + '.gpickle.gz'))
+    pattern = re.compile(
+        re.escape(item["snapshot"]) +
+        r'_[0-9\-]+_[0-9\-]+_' +
+        re.escape(str(item["pp_merge"]).replace(".", "-") + '.gpickle.gz')
+    )
     filenames = sorted([
-        filename for filename in os.listdir(preprocessed_graph_folder)
+        filename
+        for filename in os.listdir(preprocessed_graph_folder)
         if pattern.fullmatch(filename)
     ])
     if len(filenames) > 1:
@@ -58,7 +63,6 @@ def cd_cluster_evolution_mappings(item, source_folder, preprocessed_graph_folder
 
     G = nx.read_gpickle(os.path.join(
         preprocessed_graph_folder, filename
-
     ))
     cluster_level_nodes = set(G.nodes())
     del G
