@@ -82,15 +82,13 @@ def cd_cluster_evolution_mappings(item, source_folder, preprocessed_graph_folder
     non_contracted_nodes = nodes_with_parents(cluster_level_nodes, parents)
     subseqitems_mapping = {k: [] for k in non_contracted_nodes}
 
-    leaves = set(df_nodes.key) - set(containment_edges.u)
-
-    for key in leaves:
-        contracted_to = is_contracted(key, parents, cluster_level_nodes)
+    for key in df_nodes.key:
+        contracted_to = get_contracted_node(key, parents, cluster_level_nodes)
         if contracted_to:
             subseqitems_mapping[contracted_to].append(key)
 
     node_seqitem_counts = Counter(
-        is_contracted(key, parents, cluster_level_nodes)
+        get_contracted_node(key, parents, cluster_level_nodes)
         for key in df_nodes[df_nodes.type == 'seqitem'].key
     )
     node_seqitem_counts = dict(node_seqitem_counts)
@@ -111,14 +109,14 @@ def cd_cluster_evolution_mappings(item, source_folder, preprocessed_graph_folder
         pickle.dump(prepared_data, f)
 
 
-def is_contracted(node, parents, cluster_level_nodes):
+def get_contracted_node(node, parents, cluster_level_nodes):
+    if node in cluster_level_nodes:
+        return node
     parent = parents.get(node)
     if parent is None:
         return None
-    elif parent in cluster_level_nodes:
-        return parent
     else:
-        return is_contracted(parent, parents, cluster_level_nodes)
+        return get_contracted_node(parent, parents, cluster_level_nodes)
 
 def nodes_with_parents(nodes, parents):
     nodes = list(nodes)
