@@ -89,22 +89,30 @@ def cd_cluster_inspection(
         sorted(enumerate(community_tokens_n), key=lambda x: -x[-1])
     ):
         content += f"<h3>{idx_by_size+1} | Community {community_id} | {tokens_n} Tokens | {tokens_n/corpus_tokens_n*100:.1f} %</h3>"
-        content += "<table><th>Tokens [%]</th><th>Heading path</th>"
+        content += "<table><th>Tokens [%]</th><th>Type</th><th>Heading path</th>"
         data = sorted(
             [
                 (
                     clustering.graph.nodes[n].get("tokens_n", 0),
+                    clustering.graph.nodes[n].get('document_type', ''),
                     get_heading_path(G_hierarchy, n),
                 )
                 for n in clustering.communities[community_id]
             ],
             key=lambda x: -x[0],
         )
-        for node_tokens_n, heading_path in data:
+        for node_tokens_n, document_type, heading_path in data:
             node_tokens_n_quotient = (
                 f"{node_tokens_n/tokens_n*100:.2f}" if tokens_n else "-"
             )
-            content += f'<tr><td style="text-align: right; padding-right: 2em">{node_tokens_n_quotient}</td><td>{heading_path}</td></tr>'
+            content += (
+                f'<tr>'
+                f'<td style="text-align: right; padding-right: 2em">'
+                f'{node_tokens_n_quotient}</td>'
+                f'<td>{document_type}</td>'
+                f'<td>{heading_path}</td>'
+                f'</tr>'
+            )
         content += "</table>"
     content += "</body></html>"
 

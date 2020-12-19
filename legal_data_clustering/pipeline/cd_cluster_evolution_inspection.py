@@ -96,6 +96,8 @@ def cd_cluster_evolution_inspection(
                 content += (
                     '<tr><td style="text-align: right; padding-right: 2em;">'
                     + f'{G_hierarchy.nodes[node]["tokens_n"]/cluster_tokens_n*100:.2f} %</td><td>'
+                    + G_hierarchy.nodes[node].get('document_type', '')
+                    + '</td><td>'
                     + get_heading_path(G_hierarchy, node)
                     + "</td></tr>"
                 )
