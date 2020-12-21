@@ -116,7 +116,7 @@ def cd_cluster_evolution_graph(
             [
                 n
                 for rolled_up_node in community_nodes
-                for n in preprocessed_mappings["subseqitems_mapping"][
+                for n in preprocessed_mappings["seqitems_mapping"][
                     rolled_up_node
                 ]
             ]
@@ -139,7 +139,12 @@ def cd_cluster_evolution_graph(
             # draw edges
             edges_tokens_n = defaultdict(int)
             edges_charns_n = defaultdict(int)
-            for prev_leaf, leaf in mapping.items():
+            for prev_leaf_and_text_idx, leaf_and_text_idx in mapping.items():
+                prev_leaf, prev_text_idx = prev_leaf_and_text_idx.rsplit('_', 1)
+                leaf, text_idx = leaf_and_text_idx.rsplit('_', 1)
+
+                text_idx = int(text_idx)
+
                 try:
                     prev_community_id = prev_community_id_for_rolled_down[
                         prev_leaf
@@ -162,9 +167,19 @@ def cd_cluster_evolution_graph(
                 community_name = f"{snapshot}_{community_id}"
                 edge = (prev_community_name, community_name)
 
+                if leaf in preprocessed_mappings["text_tokens_n"]:
+                    text_tokens_n = preprocessed_mappings["text_tokens_n"][leaf]
+                    text_chars_n = preprocessed_mappings["text_chars_n"][leaf]
+                    tokens_n = text_tokens_n[text_idx]
+                    chars_n = text_chars_n[text_idx]
+                else:
+                    assert text_idx == 0
+                    tokens_n = preprocessed_mappings["tokens_n"][leaf]
+                    chars_n = preprocessed_mappings["chars_n"][leaf]
+
                 # Use the tokens_n and chars_n values of the later year
-                edges_tokens_n[edge] += preprocessed_mappings["tokens_n"][leaf]
-                edges_charns_n[edge] += preprocessed_mappings["chars_n"][leaf]
+                edges_tokens_n[edge] += tokens_n
+                edges_charns_n[edge] += chars_n
 
             B.add_edges_from(edges_tokens_n.keys())
             nx.set_edge_attributes(B, edges_tokens_n, "tokens_n")
