@@ -167,11 +167,11 @@ def cd_cluster_evolution_graph(
                 community_name = f"{snapshot}_{community_id}"
                 edge = (prev_community_name, community_name)
 
-                if leaf in preprocessed_mappings["text_tokens_n"]:
-                    text_tokens_n = preprocessed_mappings["text_tokens_n"][leaf]
-                    text_chars_n = preprocessed_mappings["text_chars_n"][leaf]
-                    tokens_n = text_tokens_n[text_idx]
-                    chars_n = text_chars_n[text_idx]
+                if leaf in preprocessed_mappings["texts_tokens_n"]:
+                    texts_tokens_n = preprocessed_mappings["texts_tokens_n"][leaf]
+                    texts_chars_n = preprocessed_mappings["texts_chars_n"][leaf]
+                    tokens_n = texts_tokens_n[text_idx]
+                    chars_n = texts_chars_n[text_idx]
                 else:
                     assert text_idx == 0
                     tokens_n = preprocessed_mappings["tokens_n"][leaf]

@@ -95,14 +95,14 @@ def cd_cluster_evolution_mappings(item, source_folder, preprocessed_graph_folder
     chars_n = {k: v for k, v in zip(df_nodes.key, df_nodes.chars_n)}
     # Details of the size of the children if a child of a node is a text and
     # the node has more than one child
-    text_tokens_n = {
+    texts_tokens_n = {
         k: v.split(',')
-        for k, v in zip(df_nodes.key, df_nodes.text_tokens_n)
+        for k, v in zip(df_nodes.key, df_nodes.texts_tokens_n)
         if not pd.isna(v)
     }
-    text_chars_n = {
+    texts_chars_n = {
         k: v.split(',')
-        for k, v in zip(df_nodes.key, df_nodes.text_chars_n)
+        for k, v in zip(df_nodes.key, df_nodes.texts_chars_n)
         if not pd.isna(v)
     }
 
@@ -112,8 +112,8 @@ def cd_cluster_evolution_mappings(item, source_folder, preprocessed_graph_folder
         tokens_n=tokens_n,
         chars_n=chars_n,
         seqitem_counts=node_seqitem_counts,
-        text_tokens_n=text_tokens_n,
-        text_chars_n=text_chars_n
+        texts_tokens_n=texts_tokens_n,
+        texts_chars_n=texts_chars_n
     )
 
     with open(
