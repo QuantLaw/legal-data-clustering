@@ -144,10 +144,8 @@ def check_chapters(G, node):
         return False
     elif has_book_or_chapter_above(G, node):
         return True
-    elif has_book_or_chapter_below(G, node):
+    else:  # chapter below or no chapter or book in branch
         return False
-    else:  # no chapter or book in branch
-        return True
 
 
 def is_node_contracted(G, node, merge_threshold=0, merge_attribute="chars_n"):
