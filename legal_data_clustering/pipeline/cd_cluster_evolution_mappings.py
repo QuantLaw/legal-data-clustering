@@ -70,7 +70,7 @@ def cd_cluster_evolution_mappings(item, source_folder, preprocessed_graph_folder
     df_nodes = pd.read_csv(os.path.join(
         source_folder,
         item["snapshot"] + '.nodes.csv.gz'
-    ))
+    ), dtype={'texts_tokens_n': str, "texts_chars_n": str})
     df_edges = pd.read_csv(os.path.join(
         source_folder,
         item["snapshot"] + '.edges.csv.gz'
@@ -96,12 +96,12 @@ def cd_cluster_evolution_mappings(item, source_folder, preprocessed_graph_folder
     # Details of the size of the children if a child of a node is a text and
     # the node has more than one child
     texts_tokens_n = {
-        k: v.split(',')
+        k: list(map(int, v.split(',')))
         for k, v in zip(df_nodes.key, df_nodes.texts_tokens_n)
         if not pd.isna(v)
     }
     texts_chars_n = {
-        k: v.split(',')
+        k: list(map(int, v.split(',')))
         for k, v in zip(df_nodes.key, df_nodes.texts_chars_n)
         if not pd.isna(v)
     }
