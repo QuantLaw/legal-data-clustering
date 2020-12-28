@@ -1,5 +1,5 @@
 ALL_YEARS = list(range(1994, 2020))
-ALL_YEARS_REG = list(range(1996, 2020))
+ALL_YEARS_REG = list(range(1998, 2020))
 
 US_DATA_PATH = "../legal-networks-data/us"
 US_TEMP_DATA_PATH = "temp/us"

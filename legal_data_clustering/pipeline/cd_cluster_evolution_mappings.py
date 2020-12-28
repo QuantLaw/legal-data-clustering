@@ -14,7 +14,7 @@ def filename_for_mapping(mapping):
 
 
 def cd_cluster_evolution_mappings_prepare(
-    overwrite, cluster_mapping_configs, source_folder, target_folder
+    overwrite, cluster_mapping_configs, source_folder, target_folder, snapshots
 ):
     ensure_exists(target_folder)
 
@@ -22,6 +22,13 @@ def cd_cluster_evolution_mappings_prepare(
         f.split(".")[0]
         for f in list_dir(f"{source_folder}/", ".edges.csv.gz")
     ] # fix
+
+    if snapshots:
+        subseqitems_snapshots = [
+            s
+            for s in subseqitems_snapshots
+            if s in snapshots
+        ]
 
     # get configs
     mappings = [
