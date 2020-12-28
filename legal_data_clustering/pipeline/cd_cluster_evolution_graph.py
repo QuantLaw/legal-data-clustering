@@ -116,7 +116,7 @@ def cd_cluster_evolution_graph(
             [
                 n
                 for rolled_up_node in community_nodes
-                for n in preprocessed_mappings["seqitems_mapping"][
+                for n in preprocessed_mappings["items_mapping"][
                     rolled_up_node
                 ]
             ]

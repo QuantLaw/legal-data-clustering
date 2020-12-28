@@ -315,6 +315,7 @@ if __name__ == "__main__":
             cluster_mapping_configs,
             source_folder,
             target_folder,
+            snapshots,
         )
         process_items(
             items,
