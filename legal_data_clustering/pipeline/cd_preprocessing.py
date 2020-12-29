@@ -100,6 +100,9 @@ def cd_preprocessing(
         mqG, seq_decay_func=seq_decay_func, seq_ref_ratio=config["pp_ratio"]
     )
 
+    check_missing_edges(mqG, smqG)
+
+
     if config["pp_co_occurrence"] != 0:
         missing_nodes = add_co_occurrences(
             config, smqG, G, nodes_mapping, decision_network_path
@@ -120,6 +123,19 @@ def cd_preprocessing(
         smqG.remove_edges_from(edges_to_remove)
 
     nx.write_gpickle(smqG, graph_target_path)
+
+
+def check_missing_edges(mqG, smqG):
+    missing_edges = [
+        d
+        for u, v, k, d in (
+                set(mqG.edges(keys=True, data='edge_type')) -
+                set(smqG.edges(keys=True, data='edge_type'))
+        )
+        if d != 'containment'
+    ]
+
+    assert not missing_edges, missing_edges
 
 
 simplify_citekey_pattern = re.compile(r"(.+)[\-\–]\d{4}")

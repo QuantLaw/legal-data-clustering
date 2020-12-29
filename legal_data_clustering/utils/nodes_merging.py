@@ -38,16 +38,21 @@ def quotient_graph_with_merge(
             nG.add_node(node_id, **node_attrs)
             nodes_mapping[node_id] = node_id
 
+    nodes_in_nG = set(nG.nodes)
+
     for e_source, e_target, e_data in G.edges(data=True):
         if e_data["edge_type"] in {"reference", "authority"}:
             # get source and target of edge in quotient graph
             source = nodes_mapping[e_source]
             target = nodes_mapping[e_target]
+            assert source in nodes_in_nG, source
+            assert target in nodes_in_nG, target
             if self_loops or source != target:  # skip loops, if deactivated
                 nG.add_edge(source, target, **e_data)
         else:
             # add containment edge if target is still in quotient graph
             if e_target in nG:
+                assert e_source in nodes_in_nG, e_source
                 nG.add_edge(e_source, e_target, **e_data)
 
     nG.graph[
