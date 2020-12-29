@@ -84,6 +84,14 @@ def cd_preprocessing(
     seq_decay_func = decay_function(config["pp_decay"])
 
     G = nx.read_gpickle(source_path)
+
+    # Remove authority edges
+    G.remove_edges_from([
+        (u, v, k)
+        for u, v, k, d in G.edges(keys=True, data='edge_type')
+        if d == 'authority'
+    ])
+
     mqG, nodes_mapping = quotient_graph_with_merge(
         G, merge_threshold=config["pp_merge"]
     )
