@@ -69,8 +69,9 @@ def get_merge_parent(G, node, merge_threshold=0, merge_attribute="chars_n"):
     if not is_node_contracted(G, node, merge_threshold, merge_attribute):
         return node
 
-    parent = list(G.predecessors(node))[0]
-    return get_merge_parent(G, parent, merge_threshold, merge_attribute)
+    parents = list(G.predecessors(node))
+    assert len(parents) == 1
+    return get_merge_parent(G, parents[0], merge_threshold, merge_attribute)
 
 
 chapter_buch_pattern = regex.compile(
@@ -92,47 +93,6 @@ def is_child_of_root_node(G, node):
     return G.in_degree(parent) == 0
 
 
-def is_book_or_chapter(G, node):
-    """
-    Helper for is_node_contracted
-    """
-    return "heading" in G.nodes[node] and chapter_buch_pattern.match(
-        G.nodes[node]["heading"]
-    )
-
-
-def has_book_or_chapter_above(G, node):
-    """
-    Helper for is_node_contracted
-    """
-    matching_ancestors = [
-        n
-        for n in nx.ancestors(G, node)
-        if n != "root"
-        and "heading" in G.nodes[n]
-        and chapter_buch_pattern.match(G.nodes[n]["heading"])
-    ]
-    return bool(matching_ancestors)
-
-
-def has_book_or_chapter_below(G, node):
-    """
-    Helper for is_node_contracted
-
-    Note that nx.predecessor returns a dictionary of nodes on a path from
-    node to all other nodes, i.e., the dictionary's keys are the descendants
-    (possibly replaced by nx.descendants in the future).
-    """
-    matching_descendants = [
-        n
-        for n in nx.predecessor(G, node)
-        if n != "root"
-        and "heading" in G.nodes[n]
-        and chapter_buch_pattern.match(G.nodes[n]["heading"])
-    ]
-    return bool(matching_descendants)
-
-
 def is_parent_too_big(G, node, merge_attribute, merge_threshold):
     """
     Helper for is_node_contracted
@@ -141,13 +101,35 @@ def is_parent_too_big(G, node, merge_attribute, merge_threshold):
     return G.nodes[parent][merge_attribute] > merge_threshold
 
 
-def check_chapters(G, node):
+def get_parent_nodes(G, n):
     """
-    Helper for is_node_contracted
+    get parents of a node ordered root first
     """
-    if is_book_or_chapter(G, node):
+    parents = list(G.predecessors(n))
+    if parents:
+        assert len(parents) == 1
+        return get_parent_nodes(G, parents[0]) + parents
+    else:
+        return []
+
+
+def get_mapped_chapter_book(G, node):
+    for n in get_parent_nodes(G, node) + [node]:
+        if n == 'root':
+            continue
+        heading = G.nodes[n].get('heading')
+        if heading:
+            if chapter_buch_pattern.match(heading):
+                return n
+    return None
+
+
+def contracted_below_chapter_book(G, node):
+    mapped_node = get_mapped_chapter_book(G, node)
+
+    if mapped_node == node:
         return False
-    elif has_book_or_chapter_above(G, node):
+    elif mapped_node:
         return True
     else:  # chapter below or no chapter or book in branch
         return False
@@ -169,7 +151,7 @@ def is_node_contracted(G, node, merge_threshold=0, merge_attribute="chars_n"):
     if is_root_node(G, node) or is_child_of_root_node(G, node):
         return False
     elif merge_threshold == -1:
-        return check_chapters(G, node)
+        return contracted_below_chapter_book(G, node)
     elif is_parent_too_big(G, node, merge_attribute, merge_threshold):
         return False
     else:
