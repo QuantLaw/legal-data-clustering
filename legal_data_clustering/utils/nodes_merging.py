@@ -78,6 +78,7 @@ chapter_buch_pattern = regex.compile(
     r"\w*\s*\bBuch\b|\[?CHAPTER|\[?Chapter|\[?Chap\."
 )
 
+
 def is_root_node(G, node):
     """
     Helper for is_node_contracted
@@ -124,12 +125,25 @@ def get_mapped_chapter_book(G, node):
     return None
 
 
+def parent_without_chapters_books(G, node):
+    parent, = list(G.predecessors(node))
+    for _, successors in nx.bfs_successors(G, parent):
+        for successor in successors:
+            heading = G.nodes[successor].get('heading')
+            if heading:
+                if chapter_buch_pattern.match(heading):
+                    return False
+    return True
+
+
 def contracted_below_chapter_book(G, node):
     mapped_node = get_mapped_chapter_book(G, node)
 
     if mapped_node == node:
         return False
     elif mapped_node:
+        return True
+    elif parent_without_chapters_books(G, node):
         return True
     else:  # chapter below or no chapter or book in branch
         return False
