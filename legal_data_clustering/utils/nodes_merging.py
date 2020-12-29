@@ -39,7 +39,7 @@ def quotient_graph_with_merge(
             nodes_mapping[node_id] = node_id
 
     for e_source, e_target, e_data in G.edges(data=True):
-        if e_data["edge_type"] in {"reference", "identity"}:
+        if e_data["edge_type"] in {"reference", "authority"}:
             # get source and target of edge in quotient graph
             source = nodes_mapping[e_source]
             target = nodes_mapping[e_target]
