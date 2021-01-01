@@ -57,8 +57,17 @@ def cd_cluster_evolution_inspection(
     G = nx.read_gpickle(
         os.path.join(source_folder, source_filename_base + ".gpickle.gz")
     )
-    families = cluster_families(G, 0.15)
 
+    families = cluster_families(G, 0.15)
+    destination = f"{target_folder}/{source_filename_base}.htm"
+    generate_inspection(G, families, destination)
+
+    families = cluster_families(G, 0.15, attr='tokens_n_rel')
+    destination = f"{target_folder}/{source_filename_base}.rel.htm"
+    generate_inspection(G, families, destination)
+
+
+def generate_inspection(G, families, destination):
     toc = "<h1>TOC</h1><table><th>Index</th><th>Leading cluster</th>\n"
     for idx, family_nodes in enumerate(families[:100]):
         toc += f'<tr><td><a href="#idx_{idx}">Family {idx}</a></td><td> – <a href="#leading_{family_nodes[0]}">{family_nodes[0]}</a></td></li>\n'
@@ -106,7 +115,7 @@ def cd_cluster_evolution_inspection(
             last_year = year
 
         content += "</div><hr>"
-    with open(f"{target_folder}/{source_filename_base}.htm", "w") as f:
+    with open(destination, "w") as f:
         f.write(
             """<!DOCTYPE html>
             <html>

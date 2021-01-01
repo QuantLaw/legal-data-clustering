@@ -98,8 +98,16 @@ def cd_cluster_evolution_mappings(item, source_folder, preprocessed_graph_folder
     )
     node_seqitem_counts = dict(node_seqitem_counts)
 
-    tokens_n = {k: v for k, v in zip(df_nodes.key, df_nodes.tokens_n)}
-    chars_n = {k: v for k, v in zip(df_nodes.key, df_nodes.chars_n)}
+    tokens_n = {
+        k: v
+        for k, v in zip(df_nodes.key, df_nodes.tokens_n)
+        if not pd.isna(v)
+    }
+    chars_n = {
+        k: v
+        for k, v in zip(df_nodes.key, df_nodes.chars_n)
+        if not pd.isna(v)
+    }
     # Details of the size of the children if a child of a node is a text and
     # the node has more than one child
     texts_tokens_n = {
@@ -112,6 +120,11 @@ def cd_cluster_evolution_mappings(item, source_folder, preprocessed_graph_folder
         for k, v in zip(df_nodes.key, df_nodes.texts_chars_n)
         if not pd.isna(v)
     }
+    document_type = {
+        k: v
+        for k, v in zip(df_nodes.key, df_nodes.document_type)
+        if not pd.isna(v)
+    }
 
 
     prepared_data = dict(
@@ -120,7 +133,8 @@ def cd_cluster_evolution_mappings(item, source_folder, preprocessed_graph_folder
         chars_n=chars_n,
         seqitem_counts=node_seqitem_counts,
         texts_tokens_n=texts_tokens_n,
-        texts_chars_n=texts_chars_n
+        texts_chars_n=texts_chars_n,
+        document_type=document_type,
     )
 
     with open(
