@@ -255,18 +255,18 @@ def quotient_decision_graph(G, merge_decisions, merge_statutes):
     return H
 
 
-def cluster_families(G, threshold):
-    H = filter_edges_for_cluster_families(G, threshold, "tokens_n")
+def cluster_families(G, threshold, attr="tokens_n"):
+    H = filter_edges_for_cluster_families(G, threshold, attr)
     components = list(nx.connected_components(H.to_undirected()))
     components.sort(
         key=lambda nodes_set: (
-            max([H.nodes[n]["tokens_n"] for n in nodes_set]),
+            max([H.nodes[n][attr] for n in nodes_set]),
             sorted(nodes_set)[-1],
         ),
         reverse=True,
     )
     components = [
-        sorted(c, key=lambda n: (H.nodes[n]["tokens_n"], n), reverse=True)
+        sorted(c, key=lambda n: (H.nodes[n][attr], n), reverse=True)
         for c in components
     ]
     return components
