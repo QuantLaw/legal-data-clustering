@@ -110,7 +110,7 @@ if __name__ == "__main__":
                 ALL_YEARS_REG if regulations else ALL_YEARS
             )]
         elif dataset == "de":
-            snapshots = [f"{year}-01-01" for year in (
+            snapshots = [f"{year}-12-31" for year in (
                 ALL_YEARS_REG if regulations else ALL_YEARS
             )]
 
