@@ -5,6 +5,8 @@ from collections import Counter
 
 import networkx as nx
 import pandas as pd
+from quantlaw.utils.files import ensure_exists, list_dir
+from quantlaw.utils.networkx import decay_function, sequence_graph
 
 from legal_data_clustering.utils.config_handling import (
     check_for_missing_files,
@@ -13,8 +15,6 @@ from legal_data_clustering.utils.config_handling import (
 from legal_data_clustering.utils.config_parsing import filename_for_pp_config
 from legal_data_clustering.utils.graph_api import quotient_decision_graph
 from legal_data_clustering.utils.nodes_merging import quotient_graph_with_merge
-from quantlaw.utils.files import ensure_exists, list_dir
-from quantlaw.utils.networkx import decay_function, sequence_graph
 
 target_file_ext = ".gpickle.gz"
 
@@ -41,15 +41,9 @@ def cd_preprocessing_prepare(
     ]
 
     # Check if source graphs exist
-    existing_source_files = set(
-        list_dir(f"{source_folder}/seqitems", ".gpickle.gz")
-    )
-    required_source_files = {
-        f"{snapshot}.gpickle.gz" for snapshot in snapshots
-    }
-    check_for_missing_files(
-        required_source_files, existing_source_files, "graphs"
-    )
+    existing_source_files = set(list_dir(f"{source_folder}/seqitems", ".gpickle.gz"))
+    required_source_files = {f"{snapshot}.gpickle.gz" for snapshot in snapshots}
+    check_for_missing_files(required_source_files, existing_source_files, "graphs")
 
     if not overwrite:
         existing_files = list_dir(target_folder, target_file_ext)
@@ -69,16 +63,14 @@ def get_decision_network(path):
     return get_decision_network._cache[path]
 
 
-def cd_preprocessing(
-    config, source_folder, target_folder, decision_network_path
-):
+def cd_preprocessing(config, source_folder, target_folder, decision_network_path):
     source_path = f"{source_folder}/seqitems/{config['snapshot']}.gpickle.gz"
-    graph_target_path = f"{target_folder}/{filename_for_pp_config(**config, file_ext=target_file_ext)}"
+    graph_target_path = (
+        f"{target_folder}/{filename_for_pp_config(**config, file_ext=target_file_ext)}"
+    )
     missing_nodes_target_path = os.path.join(
         target_folder,
-        filename_for_pp_config(
-            **config, file_ext="_missing_co_occurr_nodes.csv"
-        ),
+        filename_for_pp_config(**config, file_ext="_missing_co_occurr_nodes.csv"),
     )
 
     seq_decay_func = decay_function(config["pp_decay"])
@@ -86,11 +78,13 @@ def cd_preprocessing(
     G = nx.read_gpickle(source_path)
 
     # Remove authority edges
-    G.remove_edges_from([
-        (u, v, k)
-        for u, v, k, d in G.edges(keys=True, data='edge_type')
-        if d == 'authority'
-    ])
+    G.remove_edges_from(
+        [
+            (u, v, k)
+            for u, v, k, d in G.edges(keys=True, data="edge_type")
+            if d == "authority"
+        ]
+    )
 
     mqG, nodes_mapping = quotient_graph_with_merge(
         G, merge_threshold=config["pp_merge"]
@@ -101,7 +95,6 @@ def cd_preprocessing(
     )
 
     check_missing_edges(mqG, smqG)
-
 
     if config["pp_co_occurrence"] != 0:
         missing_nodes = add_co_occurrences(
@@ -129,10 +122,10 @@ def check_missing_edges(mqG, smqG):
     missing_edges = [
         d
         for u, v, k, d in (
-                set(mqG.edges(keys=True, data='edge_type')) -
-                set(smqG.edges(keys=True, data='edge_type'))
+            set(mqG.edges(keys=True, data="edge_type"))
+            - set(smqG.edges(keys=True, data="edge_type"))
         )
-        if d != 'containment'
+        if d != "containment"
     ]
 
     assert not missing_edges, missing_edges
@@ -150,9 +143,7 @@ def simplify_citekey(citekey):
         return citekey
 
 
-def add_co_occurrences(
-    config, G, G_orig, nodes_mapping, decision_network_path
-):
+def add_co_occurrences(config, G, G_orig, nodes_mapping, decision_network_path):
     C = get_decision_network(decision_network_path)
     cooccurrence_weight = (
         config["pp_co_occurrence"] if config["pp_co_occurrence"] > 0 else 1
@@ -163,9 +154,7 @@ def add_co_occurrences(
     elif config["pp_co_occurrence_type"] == "paragraph":
         merge_decisions = False
     else:
-        raise Exception(
-            f"{config['pp_co_occurrence_type']} is not a valid option"
-        )
+        raise Exception(f"{config['pp_co_occurrence_type']} is not a valid option")
 
     C_merged = quotient_decision_graph(
         C, merge_decisions=merge_decisions, merge_statutes=False
@@ -209,9 +198,7 @@ def add_co_occurrences(
                 if v in nodes_citekey_mapping
             }
             targets_missing = {
-                v
-                for v in simplified_citekeys
-                if v not in nodes_citekey_mapping
+                v for v in simplified_citekeys if v not in nodes_citekey_mapping
             }
             missing_nodes.update(targets_missing)
 
@@ -224,9 +211,7 @@ def add_co_occurrences(
             (
                 u,
                 v,
-                dict(
-                    weight=cnt * cooccurrence_weight, edge_type="cooccurrence"
-                ),
+                dict(weight=cnt * cooccurrence_weight, edge_type="cooccurrence"),
             )
             for (u, v), cnt in co_occurrence_edges.items()
         ]
@@ -247,7 +232,8 @@ def add_co_occurrences(
     )
 
     if config["pp_co_occurrence"] == -2:
-        # Set weight of co-occurrence-edges that sum of weights equals the sum of weights of cross-references
+        # Set weight of co-occurrence-edges that sum of weights equals
+        # the sum of weights of cross-references
         total_weight_cooccurrence = sum(
             G.edges[u, v, k]["weight"]
             for u, v, k, edge_type in G.edges(keys=True, data="edge_type")
@@ -259,9 +245,7 @@ def add_co_occurrences(
             if edge_type == "reference"
         )
 
-        cooccurrence_factor = (
-            total_weight_reference / total_weight_cooccurrence
-        )
+        cooccurrence_factor = total_weight_reference / total_weight_cooccurrence
         print(
             "cooccurrence_factor",
             cooccurrence_factor,

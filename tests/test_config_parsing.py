@@ -1,6 +1,8 @@
 from legal_data_clustering.utils.config_parsing import (
-    convert_filename_component_to_number, filename_for_pp_config,
-    get_config_from_filename)
+    convert_filename_component_to_number,
+    filename_for_pp_config,
+    get_config_from_filename,
+)
 from tests.test_classes import ConfigTest
 
 

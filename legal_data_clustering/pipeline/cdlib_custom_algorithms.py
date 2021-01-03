@@ -1,9 +1,8 @@
 import itertools
 from collections import defaultdict
 
-import networkx as nx
-
 import infomap as imp
+import networkx as nx
 from cdlib import NodeClustering
 from cdlib.utils import convert_graph_formats
 from community import generate_dendrogram, partition_at_level
@@ -55,7 +54,8 @@ def infomap(
 
     if imp is None:
         raise ModuleNotFoundError(
-            "Optional dependency not satisfied: install infomap to use the selected feature."
+            "Optional dependency not satisfied: "
+            "install infomap to use the selected feature."
         )
 
     g = convert_graph_formats(g, nx.Graph)
@@ -66,9 +66,7 @@ def infomap(
 
     options_compiled = options + f" --markov-time {markov_time}"
     if number_of_modules:
-        options_compiled += (
-            f" --preferred-number-of-modules {number_of_modules}"
-        )
+        options_compiled += f" --preferred-number-of-modules {number_of_modules}"
     if seed is not None:
         options_compiled += f" --seed {seed}"
     if directed:
@@ -221,9 +219,7 @@ def louvain(g, weight="weight", resolution=1.0, seed=None, return_tree=False):
                     current_counts["tree"] += 1
 
                     D.add_edge("root", first_level_key)
-                    graph_key_for_nr[
-                        (parent_level, parent_nr)
-                    ] = first_level_key
+                    graph_key_for_nr[(parent_level, parent_nr)] = first_level_key
 
                 parent_key = graph_key_for_nr[(parent_level, parent_nr)]
 
@@ -248,9 +244,7 @@ def missings_nodes_as_additional_clusters(clustering: NodeClustering):
     :param clustering: NodeClustering
     :return: NodeClustering
     """
-    nodes_clustered = set(
-        itertools.chain.from_iterable(clustering.communities)
-    )
+    nodes_clustered = set(itertools.chain.from_iterable(clustering.communities))
     missings_nodes = set(clustering.graph.nodes) - nodes_clustered
     extended_communities = clustering.communities.copy()
     extended_communities.extend([[n] for n in missings_nodes])

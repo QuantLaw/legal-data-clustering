@@ -23,12 +23,9 @@ def cd_cluster_texts_prepare(
     # Check if source graphs exist
     existing_source_files = set(list_dir(source_folder, source_file_ext))
     required_source_files = {
-        filename_for_pp_config(**item, file_ext=source_file_ext)
-        for item in items
+        filename_for_pp_config(**item, file_ext=source_file_ext) for item in items
     }
-    check_for_missing_files(
-        required_source_files, existing_source_files, "clustering"
-    )
+    check_for_missing_files(required_source_files, existing_source_files, "clustering")
 
     if not overwrite:
         existing_files = os.listdir(target_folder)
@@ -61,8 +58,7 @@ def cd_cluster_texts(
         for f in list_dir(reference_parsed_folder, ".xml")
     }
     assert all(
-        len(list_dir(reference_parsed_folder, ".xml"))
-        == len(reference_parsed_files)
+        len(list_dir(reference_parsed_folder, ".xml")) == len(reference_parsed_files)
         for reference_parsed_folder in reference_parsed_folders
     )
 

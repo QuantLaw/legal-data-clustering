@@ -1,15 +1,12 @@
 import os
 
 import networkx as nx
+from quantlaw.utils.files import ensure_exists, list_dir
+from quantlaw.utils.networkx import hierarchy_graph
 
 from legal_data_clustering.utils.config_handling import get_configs
 from legal_data_clustering.utils.config_parsing import filename_for_pp_config
-from legal_data_clustering.utils.graph_api import (
-    cluster_families,
-    get_heading_path,
-)
-from quantlaw.utils.files import ensure_exists, list_dir
-from quantlaw.utils.networkx import hierarchy_graph
+from legal_data_clustering.utils.graph_api import cluster_families, get_heading_path
 
 source_file_ext = ".json"
 
@@ -30,9 +27,7 @@ def cd_cluster_evolution_inspection_prepare(
         configs = [
             config
             for config in configs
-            if filename_for_pp_config(
-                snapshot="all", **config, file_ext=".htm"
-            )
+            if filename_for_pp_config(snapshot="all", **config, file_ext=".htm")
             not in existing_files
         ]
     global cd_cluster_evolution_inspection_graphs
@@ -46,13 +41,9 @@ def cd_cluster_evolution_inspection_prepare(
     return configs
 
 
-def cd_cluster_evolution_inspection(
-    config, dataset, source_folder, target_folder
-):
+def cd_cluster_evolution_inspection(config, dataset, source_folder, target_folder):
     global cd_cluster_evolution_inspection_graphs
-    source_filename_base = filename_for_pp_config(
-        snapshot="all", **config, file_ext=""
-    )
+    source_filename_base = filename_for_pp_config(snapshot="all", **config, file_ext="")
 
     G = nx.read_gpickle(
         os.path.join(source_folder, source_filename_base + ".gpickle.gz")
@@ -62,7 +53,7 @@ def cd_cluster_evolution_inspection(
     destination = f"{target_folder}/{source_filename_base}.htm"
     generate_inspection(G, families, destination)
 
-    families = cluster_families(G, 0.15, attr='tokens_n_rel')
+    families = cluster_families(G, 0.15, attr="tokens_n_rel")
     destination = f"{target_folder}/{source_filename_base}.rel.htm"
     generate_inspection(G, families, destination)
 
@@ -70,12 +61,24 @@ def cd_cluster_evolution_inspection(
 def generate_inspection(G, families, destination):
     toc = "<h1>TOC</h1><table><th>Index</th><th>Leading cluster</th>\n"
     for idx, family_nodes in enumerate(families[:100]):
-        toc += f'<tr><td><a href="#idx_{idx}">Family {idx}</a></td><td> – <a href="#leading_{family_nodes[0]}">{family_nodes[0]}</a></td></li>\n'
+        toc += (
+            f"<tr>"
+            f'<td><a href="#idx_{idx}">Family {idx}</a></td>'
+            f"<td> – "
+            f'<a href="#leading_{family_nodes[0]}">{family_nodes[0]}</a>'
+            f"</td>"
+            f"</li>\n"
+        )
     toc += "</table>\n\n"
 
     content = "<h1>Content</h1>"
     for idx, family_nodes in enumerate(families[:100]):
-        content += f'<h2><a name="idx_{idx}"></a><a href="#top">Family {idx} – {family_nodes[0]}</a></h2>\n'
+        content += (
+            f"<h2>"
+            f'<a name="idx_{idx}"></a>'
+            f'<a href="#top">Family {idx} – {family_nodes[0]}</a>'
+            f"</h2>\n"
+        )
         content += '<div style="padding: 0 40px">'
 
         family_nodes_sorted = sorted(
@@ -94,19 +97,27 @@ def generate_inspection(G, families, destination):
             year = cluster.split("_")[0]
             if last_year is not None and last_year != year:
                 content += "<hr>"
-            content += f'<h3><a name="leading_{cluster}"></a><a href="#top">{cluster}</a></h3>\n'
+            content += (
+                f"<h3>"
+                f'<a name="leading_{cluster}"></a>'
+                f'<a href="#top">{cluster}</a>'
+                f"</h3>\n"
+            )
             if cluster == family_nodes[0]:
-                content += f"<i>LEADING</i>"
+                content += "<i>LEADING</i>"
             content += "<table>"
             cluster_tokens_n = G.nodes[cluster]["tokens_n"]
             for node in G.nodes[cluster]["nodes_contained"].split(","):
 
                 G_hierarchy = cd_cluster_evolution_inspection_graphs[year]
+                tokens_n_quote = (
+                    G_hierarchy.nodes[node]["tokens_n"] / cluster_tokens_n * 100
+                )
                 content += (
                     '<tr><td style="text-align: right; padding-right: 2em;">'
-                    + f'{G_hierarchy.nodes[node]["tokens_n"]/cluster_tokens_n*100:.2f} %</td><td>'
-                    + G_hierarchy.nodes[node].get('document_type', '')
-                    + '</td><td>'
+                    + f"{tokens_n_quote:.2f} %</td><td>"
+                    + G_hierarchy.nodes[node].get("document_type", "")
+                    + "</td><td>"
                     + get_heading_path(G_hierarchy, node)
                     + "</td></tr>"
                 )

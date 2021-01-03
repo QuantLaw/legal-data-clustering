@@ -1,10 +1,7 @@
 import os
 import re
 
-from legal_data_clustering.pipeline.cd_cluster import (
-    cd_cluster,
-    cd_cluster_prepare,
-)
+from legal_data_clustering.pipeline.cd_cluster import cd_cluster, cd_cluster_prepare
 from legal_data_clustering.pipeline.cd_cluster_evolution_graph import (
     cd_cluster_evolution_graph,
     cd_cluster_evolution_graph_prepare,
@@ -34,6 +31,7 @@ from legal_data_clustering.pipeline.main_parser import get_parser
 from legal_data_clustering.utils.config_handling import process_items
 from legal_data_clustering.utils.statics import (
     ALL_YEARS,
+    ALL_YEARS_REG,
     DE_CD_CLUSTER_EVOLUTION_INSPECTION_PATH,
     DE_CD_CLUSTER_EVOLUTION_MAPPINGS_PATH,
     DE_CD_CLUSTER_EVOLUTION_PATH,
@@ -75,7 +73,6 @@ from legal_data_clustering.utils.statics import (
     US_REG_REFERENCE_PARSED_PATH,
     US_REG_SNAPSHOT_MAPPING_EDGELIST_PATH,
     US_SNAPSHOT_MAPPING_EDGELIST_PATH,
-    ALL_YEARS_REG,
 )
 
 if __name__ == "__main__":
@@ -106,13 +103,14 @@ if __name__ == "__main__":
 
     if "all" in snapshots:
         if dataset == "us":
-            snapshots = [f"{year}" for year in (
-                ALL_YEARS_REG if regulations else ALL_YEARS
-            )]
+            snapshots = [
+                f"{year}" for year in (ALL_YEARS_REG if regulations else ALL_YEARS)
+            ]
         elif dataset == "de":
-            snapshots = [f"{year}-12-31" for year in (
-                ALL_YEARS_REG if regulations else ALL_YEARS
-            )]
+            snapshots = [
+                f"{year}-12-31"
+                for year in (ALL_YEARS_REG if regulations else ALL_YEARS)
+            ]
 
     # Validate snapshot format
     for snapshot in snapshots:
@@ -171,9 +169,7 @@ if __name__ == "__main__":
         if (
             dataset == "de"
             and items
-            and any(
-                v != 0 for v in cluster_mapping_configs["pp_co_occurrences"]
-            )
+            and any(v != 0 for v in cluster_mapping_configs["pp_co_occurrences"])
         ):
             get_decision_network(decision_network_path)
 

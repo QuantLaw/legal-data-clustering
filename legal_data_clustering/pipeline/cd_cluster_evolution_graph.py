@@ -4,12 +4,11 @@ import pickle
 from collections import Counter, defaultdict
 
 import networkx as nx
-
 from cdlib import readwrite
-from legal_data_clustering.utils.config_parsing import filename_for_pp_config
-from legal_data_clustering.utils.config_handling import get_configs
 from quantlaw.utils.files import ensure_exists, list_dir
 
+from legal_data_clustering.utils.config_handling import get_configs
+from legal_data_clustering.utils.config_parsing import filename_for_pp_config
 from legal_data_clustering.utils.graph_api import cluster_families
 
 
@@ -59,9 +58,11 @@ def cd_cluster_evolution_graph(
 
     B = nx.DiGraph()
 
-    for config_clustering_file, snapshot in zip(
-        config_clustering_files, snapshots
-    ):
+    prev_community_id_for_rolled_down = None
+    prev_preprocessed_mappings = None
+    prev_snapshot = None
+
+    for config_clustering_file, snapshot in zip(config_clustering_files, snapshots):
         # Add nodes to graph
 
         clustering = readwrite.read_community_json(
@@ -81,9 +82,7 @@ def cd_cluster_evolution_graph(
             preprocessed_mappings, clustering.communities
         )
         most_common_dict = {
-            k: ",".join(
-                [f"{elem_k},{count}" for elem_k, count in v.most_common()]
-            )
+            k: ",".join([f"{elem_k},{count}" for elem_k, count in v.most_common()])
             for k, v in counters_dict.items()
         }
         chars_n_dict = get_community_sizes(
@@ -96,17 +95,15 @@ def cd_cluster_evolution_graph(
         chars_n_rel_dict, total_chars_n_for_type = get_relative_community_sizes(
             clustering.communities,
             preprocessed_mappings["chars_n"],
-            preprocessed_mappings["document_type"]
+            preprocessed_mappings["document_type"],
         )
         tokens_n_rel_dict, total_tokens_n_for_type = get_relative_community_sizes(
             clustering.communities,
             preprocessed_mappings["tokens_n"],
-            preprocessed_mappings["document_type"]
+            preprocessed_mappings["document_type"],
         )
 
-        for community_key, community_nodes in enumerate(
-            clustering.communities
-        ):
+        for community_key, community_nodes in enumerate(clustering.communities):
             community_nodes_sorted = sorted(
                 community_nodes,
                 key=lambda n: preprocessed_mappings["tokens_n"].get(n, 0),
@@ -129,9 +126,7 @@ def cd_cluster_evolution_graph(
             [
                 n
                 for rolled_up_node in community_nodes
-                for n in preprocessed_mappings["items_mapping"][
-                    rolled_up_node
-                ]
+                for n in preprocessed_mappings["items_mapping"][rolled_up_node]
             ]
             for community_nodes in clustering.communities
         ]
@@ -145,35 +140,33 @@ def cd_cluster_evolution_graph(
         if not first:
 
             with open(
-                f"{snaphot_mapping_folder}/{prev_snapshot}_{snapshot}.json"
+                os.path.join(snaphot_mapping_folder, f"{prev_snapshot}_{snapshot}.json")
             ) as f:
                 mapping = json.load(f)
 
             # draw edges
-            edges_tokens_n_for_type = defaultdict(lambda: {t: 0 for t in total_tokens_n_for_type})
-            edges_chars_n_for_type = defaultdict(lambda: {t: 0 for t in total_chars_n_for_type})
+            edges_tokens_n_for_type = defaultdict(
+                lambda: {t: 0 for t in total_tokens_n_for_type}
+            )
+            edges_chars_n_for_type = defaultdict(
+                lambda: {t: 0 for t in total_chars_n_for_type}
+            )
             for prev_leaf_and_text_idx, leaf_and_text_idx in mapping.items():
-                prev_leaf, prev_text_idx = prev_leaf_and_text_idx.rsplit('_', 1)
-                leaf, text_idx = leaf_and_text_idx.rsplit('_', 1)
+                prev_leaf, prev_text_idx = prev_leaf_and_text_idx.rsplit("_", 1)
+                leaf, text_idx = leaf_and_text_idx.rsplit("_", 1)
 
                 text_idx = int(text_idx)
 
                 try:
-                    prev_community_id = prev_community_id_for_rolled_down[
-                        prev_leaf
-                    ]
+                    prev_community_id = prev_community_id_for_rolled_down[prev_leaf]
                 except KeyError as err:
-                    report_mapping_error(
-                        err, prev_preprocessed_mappings["tokens_n"]
-                    )
+                    report_mapping_error(err, prev_preprocessed_mappings["tokens_n"])
                     continue
 
                 try:
                     community_id = community_id_for_rolled_down[leaf]
                 except KeyError as err:
-                    report_mapping_error(
-                        err, preprocessed_mappings["tokens_n"]
-                    )
+                    report_mapping_error(err, preprocessed_mappings["tokens_n"])
                     continue
 
                 prev_community_name = f"{prev_snapshot}_{prev_community_id}"
@@ -197,33 +190,31 @@ def cd_cluster_evolution_graph(
 
             B.add_edges_from(edges_tokens_n_for_type.keys())
 
-            edges_tokens_n = {e: sum(v.values()) for e, v in edges_tokens_n_for_type.items()}
-            edges_chars_n = {e: sum(v.values()) for e, v in edges_chars_n_for_type.items()}
+            edges_tokens_n = {
+                e: sum(v.values()) for e, v in edges_tokens_n_for_type.items()
+            }
+            edges_chars_n = {
+                e: sum(v.values()) for e, v in edges_chars_n_for_type.items()
+            }
             nx.set_edge_attributes(B, edges_tokens_n, "tokens_n")
             nx.set_edge_attributes(B, edges_chars_n, "chars_n")
 
             edges_tokens_n_rel = {
-                e:
-                sum(
+                e: sum(
                     value / total_tokens_n_for_type[node_type]
-                    for node_type, value in
-                    values_for_type.items()
+                    for node_type, value in values_for_type.items()
                 )
                 for e, values_for_type in edges_tokens_n_for_type.items()
             }
             edges_chars_n_rel = {
-                e:
-                    sum(
-                        value / total_chars_n_for_type[node_type]
-                        for node_type, value in
-                        values_for_type.items()
-                    )
+                e: sum(
+                    value / total_chars_n_for_type[node_type]
+                    for node_type, value in values_for_type.items()
+                )
                 for e, values_for_type in edges_chars_n_for_type.items()
             }
             nx.set_edge_attributes(B, edges_tokens_n_rel, "tokens_n_rel")
             nx.set_edge_attributes(B, edges_chars_n_rel, "chars_n_rel")
-
-
 
         first = False
         prev_snapshot = snapshot
@@ -237,28 +228,28 @@ def cd_cluster_evolution_graph(
     )
 
     # Write families
-    families = cluster_families(B, threshold=.15)
+    families = cluster_families(B, threshold=0.15)
     path = (
         f"{target_folder}/"
         f'{filename_for_pp_config(snapshot="all", **config, file_ext=".families.json")}'
     )
-    with open(path, 'w') as f:
+    with open(path, "w") as f:
         json.dump(families, f)
 
     # Write families with relateive method
     if regulations:
-        families = cluster_families(B, threshold=.15, attr='tokens_n_rel')
-        path = (
-            f"{target_folder}/"
-            f'{filename_for_pp_config(snapshot="all", **config, file_ext=".families_rel.json")}'
+        families = cluster_families(B, threshold=0.15, attr="tokens_n_rel")
+        path = os.path.join(
+            target_folder,
+            filename_for_pp_config(
+                snapshot="all", **config, file_ext=".families_rel.json"
+            ),
         )
-        with open(path, 'w') as f:
+        with open(path, "w") as f:
             json.dump(families, f)
 
 
-def get_cluster_law_names_counting_seqitems(
-    preprocessed_mappings, communities
-):
+def get_cluster_law_names_counting_seqitems(preprocessed_mappings, communities):
     counters = dict()
     for community_id, community_nodes in enumerate(communities):
         counters[community_id] = Counter(
@@ -266,9 +257,7 @@ def get_cluster_law_names_counting_seqitems(
                 "_".join(community_node.split("_")[:-1])
                 for community_node in community_nodes
                 for _ in range(
-                    preprocessed_mappings["seqitem_counts"].get(
-                        community_node, 0
-                    )
+                    preprocessed_mappings["seqitem_counts"].get(community_node, 0)
                 )
             ]
         )
@@ -294,9 +283,7 @@ def get_configs_no_overwrite(configs, existing_files):
     configs = [
         config
         for config in configs
-        if filename_for_pp_config(
-            snapshot="all", **config, file_ext=".gpickle.gz"
-        )
+        if filename_for_pp_config(snapshot="all", **config, file_ext=".gpickle.gz")
         not in existing_files
     ]
     return configs
@@ -329,6 +316,7 @@ def get_community_sizes(communities, node_sizes):
         community_sizes[community_id] = sum([node_sizes.get(n, 0) for n in nodes])
     return community_sizes
 
+
 def get_relative_community_sizes(communities, node_sizes, node_types):
     # Get different types of nodes
     node_types_set = set(node_types.values())
@@ -337,27 +325,24 @@ def get_relative_community_sizes(communities, node_sizes, node_types):
     community_sizes_for_type = defaultdict(dict)
     for community_id, nodes in enumerate(communities):
         for node_type in node_types_set:
-            community_sizes_for_type[community_id][node_type] = sum([
-                node_sizes.get(n, 0)
-                for n in nodes
-                if node_types[n] == node_type
-            ])
+            community_sizes_for_type[community_id][node_type] = sum(
+                [node_sizes.get(n, 0) for n in nodes if node_types[n] == node_type]
+            )
 
     # Calculate total size of nodes for each type
     total_size_for_type = {
-        node_type:
-        sum(d[node_type] for d in community_sizes_for_type.values())
+        node_type: sum(d[node_type] for d in community_sizes_for_type.values())
         for node_type in node_types_set
     }
 
     # Set regulations and statutes to the same weight
     # only if there are more regulations than statutes
-    assert not set(total_size_for_type) - {'statute', 'regulation'}
+    assert not set(total_size_for_type) - {"statute", "regulation"}
     if (
-        'regulation' in set(total_size_for_type) and
-        total_size_for_type['regulation'] < total_size_for_type['statute']
+        "regulation" in set(total_size_for_type)
+        and total_size_for_type["regulation"] < total_size_for_type["statute"]
     ):
-        total_size_for_type['regulation'] = total_size_for_type['statute']
+        total_size_for_type["regulation"] = total_size_for_type["statute"]
 
     # Calculate the relative community size by sum the relative size for each type
     community_sizes = {
@@ -365,8 +350,7 @@ def get_relative_community_sizes(communities, node_sizes, node_types):
             community_size / total_size_for_type[node_type]
             for node_type, community_size in community_sizes_for_type.items()
         )
-        for community_id, community_sizes_for_type
-        in community_sizes_for_type.items()
+        for community_id, community_sizes_for_type in community_sizes_for_type.items()
     }
 
     return community_sizes, total_size_for_type

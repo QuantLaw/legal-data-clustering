@@ -32,9 +32,7 @@ def process_items(
             # to make matplotlib working.
             # Chunksize should be higher or none.
         with ctx.Pool(processes=processes) as p:
-            logs = p.starmap(
-                action_method, [(i, *args) for i in items], chunksize
-            )
+            logs = p.starmap(action_method, [(i, *args) for i in items], chunksize)
     else:
         logs = []
         for item in items:
@@ -94,7 +92,8 @@ def check_for_missing_files(
     missing_source_files = required_source_files - existing_source_files
     if len(missing_source_files):
         raise Exception(
-            f'Source {missing_graph_type} are missing: {" ".join(sorted(missing_source_files))}'
+            f"Source {missing_graph_type} are missing: "
+            + " ".join(sorted(missing_source_files))
         )
 
 
