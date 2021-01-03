@@ -350,6 +350,15 @@ def get_relative_community_sizes(communities, node_sizes, node_types):
         for node_type in node_types_set
     }
 
+    # Set regulations and statutes to the same weight
+    # only if there are more regulations than statutes
+    assert not set(total_size_for_type) - {'statute', 'regulation'}
+    if (
+        'regulation' in set(total_size_for_type) and
+        total_size_for_type['regulation'] < total_size_for_type['statute']
+    ):
+        total_size_for_type['regulation'] = total_size_for_type['statute']
+
     # Calculate the relative community size by sum the relative size for each type
     community_sizes = {
         community_id: sum(
