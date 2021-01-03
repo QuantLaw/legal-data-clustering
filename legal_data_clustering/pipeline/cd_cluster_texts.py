@@ -114,9 +114,12 @@ def get_community_text(
                     if reference_parsed_folder == reference_parsed_folders[-1]:
                         # Last element
                         raise
-
+        elem = loaded_file_tree.find(f"//*[@key='{node}']")
+        if elem is None:
+            elem = loaded_file_tree.getroot()
+            assert elem.attrib['key'] == node
         tag_text_generator = get_descendants_texts(
-            loaded_file_tree.find(f"//*[@key='{node}']")
+            elem
         )
         tag_text = ' '.join(tag_text_generator)
         community_text += tag_text + " "
