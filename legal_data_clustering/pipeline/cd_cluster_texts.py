@@ -1,6 +1,7 @@
 import os
+import re
 
-from quantlaw.utils.beautiful_soup import create_soup
+from lxml import etree
 from quantlaw.utils.files import ensure_exists, list_dir
 
 from legal_data_clustering.utils.config_handling import (
@@ -56,15 +57,24 @@ def cd_cluster_texts(
     result_path = ensure_exists(f"{target_folder}/{source_filename_base}")
 
     reference_parsed_files = {
-        "_".join(f.split("_")[:2] + os.path.splitext(f)[0].split("_")[-1:]): f
+        os.path.splitext(f)[0]: f
         for reference_parsed_folder in reference_parsed_folders
         for f in list_dir(reference_parsed_folder, ".xml")
     }
-    assert all(
-        len(list_dir(reference_parsed_folder, ".xml"))
-        == len(reference_parsed_files)
-        for reference_parsed_folder in reference_parsed_folders
-    )
+    reference_parsed_files = {
+        (
+            "_".join(k.split("_")[:2] + k.split("_")[-1:])
+            if len(k.split('_')) == 4
+            else k
+        )
+        : f
+        for k, f in reference_parsed_files.items()
+    }
+    assert len([
+            file
+            for reference_parsed_folder in reference_parsed_folders
+            for file in list_dir(reference_parsed_folder, ".xml")
+        ]) == len(reference_parsed_files)
 
     for idx, community_nodes in enumerate(clustering.communities):
         community_text = get_community_text(
@@ -72,33 +82,58 @@ def cd_cluster_texts(
         )
         write_community_text(result_path, idx, community_text)
 
+remove_cfr_volume = re.compile(r'v\d+_')
 
 def get_community_text(
     community_nodes, reference_parsed_folders, reference_parsed_files
 ):
     loaded_file_name = None
-    loaded_file_soup = None
+    loaded_file_tree = None
     community_text = ""
     for node in sorted(community_nodes):
         node_filename = "_".join(node.split("_")[:-1])
+        # remove volumes from cfr keys
+        if node_filename.startswith('cfr'):
+            node_filename = remove_cfr_volume.sub('_', node_filename)
+
         if loaded_file_name != node_filename:
             community_text += "\n\n\n" + node_filename + "\n\n"
+
+
             loaded_file_name = reference_parsed_files[node_filename]
 
             # try to find the file in a reference_parsed_folder
             for reference_parsed_folder in reference_parsed_folders:
                 try:
-                    loaded_file_soup = create_soup(
+
+                    loaded_file_tree = etree.parse(
                         os.path.join(reference_parsed_folder, loaded_file_name)
                     )
-                except FileNotFoundError:
+                    break
+                except OSError:
                     if reference_parsed_folder == reference_parsed_folders[-1]:
                         # Last element
                         raise
 
-        tag_text = loaded_file_soup.find(key=node).get_text(" ")
+        tag_text_generator = get_descendants_texts(
+            loaded_file_tree.find(f"//*[@key='{node}']")
+        )
+        tag_text = ' '.join(tag_text_generator)
         community_text += tag_text + " "
     return community_text
+
+
+def get_descendants_texts(elem, include_tail=False):
+    if elem.text:
+        text = elem.text.strip()
+        if text:
+            yield text
+    for child in elem.getchildren():
+        yield from get_descendants_texts(child, include_tail=True)
+    if include_tail and elem.tail:
+        tail = elem.tail.strip()
+        if tail:
+            yield tail
 
 
 def write_community_text(text_path, idx, community_text):

@@ -231,10 +231,11 @@ if __name__ == "__main__":
                 if regulations
                 else DE_CD_CLUSTER_TEXTS_PATH
             )
-            reference_parsed_folders = [DE_REFERENCE_PARSED_PATH]
-            if regulations:
-                reference_parsed_folders.append(DE_REG_REFERENCE_PARSED_PATH)
-
+            reference_parsed_folders = (
+                DE_REG_REFERENCE_PARSED_PATH
+                if regulations
+                else DE_REFERENCE_PARSED_PATH
+            )
         elif dataset == "us":
             source_folder = (
                 US_REG_CD_CLUSTER_PATH if regulations else US_CD_CLUSTER_PATH
@@ -244,9 +245,14 @@ if __name__ == "__main__":
                 if regulations
                 else US_CD_CLUSTER_TEXTS_PATH
             )
-            reference_parsed_folders = [US_REFERENCE_PARSED_PATH]
-            if regulations:
-                reference_parsed_folders.append(US_REG_REFERENCE_PARSED_PATH)
+            reference_parsed_folders = (
+                US_REG_REFERENCE_PARSED_PATH
+                if regulations
+                else US_REFERENCE_PARSED_PATH
+            )
+
+        if type(reference_parsed_folders) is str:
+            reference_parsed_folders = [reference_parsed_folders]
 
         items = cd_cluster_texts_prepare(
             overwrite,
