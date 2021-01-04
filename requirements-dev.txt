@@ -1,9 +1,12 @@
 beautifulsoup4
-cdlib
+black
+cdlib==0.1.10
 coverage
+flake8
 infomap
+isort
 lxml
-networkx
+networkx==2.4
 numpy
 pandas
 pre-commit

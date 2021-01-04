@@ -1,6 +1,5 @@
 import networkx as nx
 import regex
-
 from quantlaw.utils.networkx import hierarchy_graph
 
 
@@ -74,9 +73,7 @@ def get_merge_parent(G, node, merge_threshold=0, merge_attribute="chars_n"):
     return get_merge_parent(G, parents[0], merge_threshold, merge_attribute)
 
 
-chapter_buch_pattern = regex.compile(
-    r"\w*\s*\bBuch\b|\[?CHAPTER|\[?Chapter|\[?Chap\."
-)
+chapter_buch_pattern = regex.compile(r"\w*\s*\bBuch\b|\[?CHAPTER|\[?Chapter|\[?Chap\.")
 
 
 def is_root_node(G, node):
@@ -116,9 +113,9 @@ def get_parent_nodes(G, n):
 
 def get_mapped_chapter_book(G, node):
     for n in get_parent_nodes(G, node) + [node]:
-        if n == 'root':
+        if n == "root":
             continue
-        heading = G.nodes[n].get('heading')
+        heading = G.nodes[n].get("heading")
         if heading:
             if chapter_buch_pattern.match(heading):
                 return n
@@ -126,10 +123,10 @@ def get_mapped_chapter_book(G, node):
 
 
 def parent_without_chapters_books(G, node):
-    parent, = list(G.predecessors(node))
+    (parent,) = list(G.predecessors(node))
     for _, successors in nx.bfs_successors(G, parent):
         for successor in successors:
-            heading = G.nodes[successor].get('heading')
+            heading = G.nodes[successor].get("heading")
             if heading:
                 if chapter_buch_pattern.match(heading):
                     return False

@@ -4,9 +4,7 @@ import argparse
 def get_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument("dataset", help="select a dataset: DE or US")
-    parser.add_argument(
-        "steps", nargs="+", help="select a step to perform by name"
-    )
+    parser.add_argument("steps", nargs="+", help="select a step to perform by name")
     parser.add_argument(
         "--single-process",
         dest="use_multiprocessing",

@@ -1,8 +1,6 @@
 from quantlaw.utils.files import ensure_exists, list_dir
 
-from legal_data_clustering.utils.config_handling import (
-    get_configs_for_snapshots,
-)
+from legal_data_clustering.utils.config_handling import get_configs_for_snapshots
 from legal_data_clustering.utils.config_parsing import filename_for_pp_config
 from legal_data_clustering.utils.graph_api import (
     get_clustering_result,
@@ -22,8 +20,7 @@ def cd_cluster_inspection_prepare(
     # Check if source graphs exist
     existing_source_files = set(list_dir(source_folder, source_file_ext))
     required_source_files = {
-        filename_for_pp_config(**item, file_ext=source_file_ext)
-        for item in items
+        filename_for_pp_config(**item, file_ext=source_file_ext) for item in items
     }
     missing_source_files = required_source_files - existing_source_files
     if len(missing_source_files):
@@ -36,8 +33,7 @@ def cd_cluster_inspection_prepare(
         items = [
             item
             for item in items
-            if filename_for_pp_config(**item, file_ext=".htm")
-            not in existing_files
+            if filename_for_pp_config(**item, file_ext=".htm") not in existing_files
         ]
 
     return items
@@ -88,13 +84,20 @@ def cd_cluster_inspection(
     for idx_by_size, (community_id, tokens_n) in enumerate(
         sorted(enumerate(community_tokens_n), key=lambda x: -x[-1])
     ):
-        content += f"<h3>{idx_by_size+1} | Community {community_id} | {tokens_n} Tokens | {tokens_n/corpus_tokens_n*100:.1f} %</h3>"
+        content += (
+            f"<h3>"
+            f"{idx_by_size+1} | "
+            f"Community {community_id} | "
+            f"{tokens_n} Tokens | "
+            f"{tokens_n/corpus_tokens_n*100:.1f} %"
+            f"</h3>"
+        )
         content += "<table><th>Tokens [%]</th><th>Type</th><th>Heading path</th>"
         data = sorted(
             [
                 (
                     clustering.graph.nodes[n].get("tokens_n", 0),
-                    clustering.graph.nodes[n].get('document_type', ''),
+                    clustering.graph.nodes[n].get("document_type", ""),
                     get_heading_path(G_hierarchy, n),
                 )
                 for n in clustering.communities[community_id]
@@ -106,12 +109,12 @@ def cd_cluster_inspection(
                 f"{node_tokens_n/tokens_n*100:.2f}" if tokens_n else "-"
             )
             content += (
-                f'<tr>'
+                f"<tr>"
                 f'<td style="text-align: right; padding-right: 2em">'
-                f'{node_tokens_n_quotient}</td>'
-                f'<td>{document_type}</td>'
-                f'<td>{heading_path}</td>'
-                f'</tr>'
+                f"{node_tokens_n_quotient}</td>"
+                f"<td>{document_type}</td>"
+                f"<td>{heading_path}</td>"
+                f"</tr>"
             )
         content += "</table>"
     content += "</body></html>"

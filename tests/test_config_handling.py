@@ -1,6 +1,8 @@
 from legal_data_clustering.utils.config_handling import (
-    get_configs, get_configs_for_snapshots,
-    simplify_config_for_preprocessed_graph)
+    get_configs,
+    get_configs_for_snapshots,
+    simplify_config_for_preprocessed_graph,
+)
 from tests.test_classes import ConfigTest
 
 

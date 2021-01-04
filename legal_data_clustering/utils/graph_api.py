@@ -31,23 +31,20 @@ from legal_data_clustering.utils.statics import (
 
 def add_communities_to_graph(clustering: NodeClustering):
     """
-    Assign community labels to nodes of the graph, propagating community labels from higher levels down the tree.
+    Assign community labels to nodes of the graph, propagating community labels
+    from higher levels down the tree.
     """
     community_attrs = {}
     cluster_object_attrs = {}
     hG = hierarchy_graph(clustering.graph)
     for node_key, community_ids in clustering.to_node_community_map().items():
-        node_with_descendants = [node_key] + [
-            n for n in nx.descendants(hG, node_key)
-        ]
+        node_with_descendants = [node_key] + [n for n in nx.descendants(hG, node_key)]
         for node in node_with_descendants:
             community_attrs[node] = community_ids
         cluster_object_attrs[node] = True
 
     nx.set_node_attributes(clustering.graph, community_attrs, "communities")
-    nx.set_node_attributes(
-        clustering.graph, cluster_object_attrs, "clusterobject"
-    )
+    nx.set_node_attributes(clustering.graph, cluster_object_attrs, "clusterobject")
 
 
 def add_community_to_graph(clustering: NodeClustering):
@@ -74,7 +71,8 @@ def get_clustering_result(
     read the clustering result and the respective graph.
     ::param cluster_path: path of the cdlib.readwrite.write_community_json output
     ::param dataset: 'de' or 'us'
-    ::param graph_type: 'clustering' for the rolled up graph. Other options: subseqitems, seqitems
+    ::param graph_type: 'clustering' for the rolled up graph.
+        Other options: subseqitems, seqitems
     """
 
     filename_base = os.path.splitext(os.path.split(cluster_path)[-1])[0]
@@ -126,9 +124,7 @@ def get_clustering_result(
         + (
             (US_REG_CD_CLUSTER_PATH if regulations else US_CD_CLUSTER_PATH)
             if dataset.lower() == "us"
-            else (
-                DE_REG_CD_CLUSTER_PATH if regulations else DE_CD_CLUSTER_PATH
-            )
+            else (DE_REG_CD_CLUSTER_PATH if regulations else DE_CD_CLUSTER_PATH)
         )
         + "/"
         + os.path.split(cluster_path)[-1]
@@ -140,9 +136,7 @@ def get_clustering_result(
     return clustering
 
 
-def get_community_law_name_counters(
-    clustering: NodeClustering, count_level: str
-):
+def get_community_law_name_counters(clustering: NodeClustering, count_level: str):
     """
     Counting the law_names in each cluster.
     :param clustering:
@@ -158,7 +152,7 @@ def get_community_law_name_counters(
     elif count_level == "subseqitems":
         node_type = "subseqitem"
     elif count_level == "clustering":
-        raise Exception(f"Not yet implemented")
+        raise Exception("Not yet implemented")
     else:
         raise Exception(f"Wrong argument {count_level}")
 
@@ -190,11 +184,7 @@ def get_leaves_with_communities(G):
 
 def get_community_ids(clustering: NodeClustering):
     return sorted(
-        set(
-            itertools.chain.from_iterable(
-                clustering.to_node_community_map().values()
-            )
-        )
+        set(itertools.chain.from_iterable(clustering.to_node_community_map().values()))
     )
 
 
@@ -206,9 +196,7 @@ def quotient_decision_graph(G, merge_decisions, merge_statutes):
         documents = [n for n, b in G.nodes(data="type") if b == "document"]
         H.add_nodes_from([(n.split("_")[0], G.nodes[n]) for n in documents])
     else:
-        decisions = [
-            n for n, b in G.nodes(data="bipartite") if b == "decision"
-        ]
+        decisions = [n for n, b in G.nodes(data="bipartite") if b == "decision"]
         H.add_nodes_from([(n, G.nodes[n]) for n in decisions])
 
         containment = [
@@ -220,24 +208,16 @@ def quotient_decision_graph(G, merge_decisions, merge_statutes):
 
     # Statute nodes
     if merge_statutes:
-        statute_nodes = [
-            n for n, b in G.nodes(data="bipartite") if b == "statute"
-        ]
-        statute_nodes_merged = list(
-            sorted({n.split("_")[0] for n in statute_nodes})
-        )
+        statute_nodes = [n for n, b in G.nodes(data="bipartite") if b == "statute"]
+        statute_nodes_merged = list(sorted({n.split("_")[0] for n in statute_nodes}))
         H.add_nodes_from(statute_nodes_merged, bipartite="statute")
     else:
-        statute_nodes = [
-            n for n, b in G.nodes(data="bipartite") if b == "statute"
-        ]
+        statute_nodes = [n for n, b in G.nodes(data="bipartite") if b == "statute"]
         H.add_nodes_from([(n, G.nodes[n]) for n in statute_nodes])
 
     # Reference edges
     references = [
-        [u, v, d]
-        for u, v, d in G.edges(data=True)
-        if d["edge_type"] == "reference"
+        [u, v, d] for u, v, d in G.edges(data=True) if d["edge_type"] == "reference"
     ]
 
     references_dict = defaultdict(int)
@@ -266,8 +246,7 @@ def cluster_families(G, threshold, attr="tokens_n"):
         reverse=True,
     )
     components = [
-        sorted(c, key=lambda n: (H.nodes[n][attr], n), reverse=True)
-        for c in components
+        sorted(c, key=lambda n: (H.nodes[n][attr], n), reverse=True) for c in components
     ]
     return components
 

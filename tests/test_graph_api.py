@@ -2,12 +2,15 @@ import unittest
 from copy import deepcopy
 
 import networkx as nx
-
 from cdlib import NodeClustering
+
 from legal_data_clustering.utils.graph_api import (
-    add_communities_to_graph, add_community_to_graph,
-    filter_edges_for_cluster_families, get_heading_path,
-    get_leaves_with_communities)
+    add_communities_to_graph,
+    add_community_to_graph,
+    filter_edges_for_cluster_families,
+    get_heading_path,
+    get_leaves_with_communities,
+)
 
 
 class TestGraphAPI(unittest.TestCase):

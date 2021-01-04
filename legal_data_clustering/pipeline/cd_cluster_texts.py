@@ -24,12 +24,9 @@ def cd_cluster_texts_prepare(
     # Check if source graphs exist
     existing_source_files = set(list_dir(source_folder, source_file_ext))
     required_source_files = {
-        filename_for_pp_config(**item, file_ext=source_file_ext)
-        for item in items
+        filename_for_pp_config(**item, file_ext=source_file_ext) for item in items
     }
-    check_for_missing_files(
-        required_source_files, existing_source_files, "clustering"
-    )
+    check_for_missing_files(required_source_files, existing_source_files, "clustering")
 
     if not overwrite:
         existing_files = os.listdir(target_folder)
@@ -64,17 +61,18 @@ def cd_cluster_texts(
     reference_parsed_files = {
         (
             "_".join(k.split("_")[:2] + k.split("_")[-1:])
-            if len(k.split('_')) == 4
+            if len(k.split("_")) == 4
             else k
-        )
-        : f
+        ): f
         for k, f in reference_parsed_files.items()
     }
-    assert len([
+    assert len(
+        [
             file
             for reference_parsed_folder in reference_parsed_folders
             for file in list_dir(reference_parsed_folder, ".xml")
-        ]) == len(reference_parsed_files)
+        ]
+    ) == len(reference_parsed_files)
 
     for idx, community_nodes in enumerate(clustering.communities):
         community_text = get_community_text(
@@ -82,7 +80,9 @@ def cd_cluster_texts(
         )
         write_community_text(result_path, idx, community_text)
 
-remove_cfr_volume = re.compile(r'v\d+_')
+
+remove_cfr_volume = re.compile(r"v\d+_")
+
 
 def get_community_text(
     community_nodes, reference_parsed_folders, reference_parsed_files
@@ -93,12 +93,11 @@ def get_community_text(
     for node in sorted(community_nodes):
         node_filename = "_".join(node.split("_")[:-1])
         # remove volumes from cfr keys
-        if node_filename.startswith('cfr'):
-            node_filename = remove_cfr_volume.sub('_', node_filename)
+        if node_filename.startswith("cfr"):
+            node_filename = remove_cfr_volume.sub("_", node_filename)
 
         if loaded_file_name != node_filename:
             community_text += "\n\n\n" + node_filename + "\n\n"
-
 
             loaded_file_name = reference_parsed_files[node_filename]
 
@@ -121,7 +120,7 @@ def get_community_text(
         tag_text_generator = get_descendants_texts(
             elem
         )
-        tag_text = ' '.join(tag_text_generator)
+        tag_text = " ".join(tag_text_generator)
         community_text += tag_text + " "
     return community_text
 
