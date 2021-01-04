@@ -53,10 +53,6 @@ def cd_cluster_evolution_inspection(config, dataset, source_folder, target_folde
     destination = f"{target_folder}/{source_filename_base}.htm"
     generate_inspection(G, families, destination)
 
-    families = cluster_families(G, 0.15, attr="tokens_n_rel")
-    destination = f"{target_folder}/{source_filename_base}.rel.htm"
-    generate_inspection(G, families, destination)
-
 
 def generate_inspection(G, families, destination):
     toc = "<h1>TOC</h1><table><th>Index</th><th>Leading cluster</th>\n"
