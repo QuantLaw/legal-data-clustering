@@ -30,13 +30,14 @@ def cd_cluster_evolution_inspection_prepare(
             if filename_for_pp_config(snapshot="all", **config, file_ext=".htm")
             not in existing_files
         ]
-    global cd_cluster_evolution_inspection_graphs
-    cd_cluster_evolution_inspection_graphs = {
-        f[: -len(".gpickle.gz")]: hierarchy_graph(
-            nx.read_gpickle(os.path.join(crossreference_graph_folder, f))
-        )
-        for f in list_dir(crossreference_graph_folder, ".gpickle.gz")
-    }
+    if configs:
+        global cd_cluster_evolution_inspection_graphs
+        cd_cluster_evolution_inspection_graphs = {
+            f[: -len(".gpickle.gz")]: hierarchy_graph(
+                nx.read_gpickle(os.path.join(crossreference_graph_folder, f))
+            )
+            for f in list_dir(crossreference_graph_folder, ".gpickle.gz")
+        }
 
     return configs
 

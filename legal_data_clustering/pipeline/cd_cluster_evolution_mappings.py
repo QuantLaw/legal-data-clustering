@@ -51,7 +51,8 @@ def cd_cluster_evolution_mappings(
     pattern = re.compile(
         re.escape(item["snapshot"])
         + r"_[0-9\-]+_[0-9\-]+_"
-        + re.escape(str(item["pp_merge"]).replace(".", "-") + ".gpickle.gz")
+        + re.escape(str(item["pp_merge"]).replace(".", "-"))
+        + r".*\.gpickle\.gz"
     )
     filenames = sorted(
         [

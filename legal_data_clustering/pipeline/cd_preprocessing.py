@@ -56,6 +56,7 @@ def get_decision_network(path):
     """
     Get decision network. Load or get from cache
     """
+    assert path
     if not getattr(get_decision_network, "_cache", None):
         get_decision_network._cache = {}
     if path not in get_decision_network._cache:

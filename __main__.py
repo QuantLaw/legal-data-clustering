@@ -101,14 +101,14 @@ if __name__ == "__main__":
     if dataset not in ["de", "us"]:
         raise Exception(f"{dataset} unsupported dataset. Options: us, de")
 
-    if "all" in snapshots:
+    if "all" in snapshots or "all-new-years" in snapshots:
         if dataset == "us":
             snapshots = [
                 f"{year}" for year in (ALL_YEARS_REG if regulations else ALL_YEARS)
             ]
         elif dataset == "de":
             snapshots = [
-                f"{year}-12-31"
+                 f"{year}-12-31" if "all" in snapshots else f"{year}-01-01"
                 for year in (ALL_YEARS_REG if regulations else ALL_YEARS)
             ]
 

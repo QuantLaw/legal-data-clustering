@@ -1,27 +1,26 @@
 #!/bin/bash
+set -e
 
 # Thesis
 
 # Vergleich der Algorithmen
-python . de preprocess cluster --clustering-method louvain infomap --seed 1 --snapshot 2018-01-01
-python . us preprocess cluster --clustering-method louvain infomap --seed 1 --snapshot 2018
+python . de preprocess cluster --clustering-method louvain infomap --seed 1 --snapshot 2019-01-01 2018-01-01
+python . us preprocess cluster --clustering-method louvain infomap --seed 1 --snapshot 2019 2018
 
 # Verlgeich der Modelle
-python . de preprocess cluster --clustering-method louvain --seed 1 --pp-co-occurrence -1 -2 --pp-co-occurrence-type paragraph --snapshot 2018-01-01 --markov-time 1 0.7 0.5
+python . de preprocess cluster --clustering-method louvain --seed 1 --pp-co-occurrence -1 -2 --pp-co-occurrence-type paragraph --snapshot 2019-01-01 2018-01-01 --markov-time 1 0.7 0.5
 
 # Verlgeich des Detailgrads
-python . de preprocess cluster --clustering-method louvain --seed 1 --pp-ratio 5 --pp-merge 0 --pp-co-occurrence -2 --pp-co-occurrence-type paragraph --snapshot 2018-01-01 --markov-time 1
+python . de preprocess cluster --clustering-method louvain --seed 1 --pp-ratio 5 --pp-merge 0 --pp-co-occurrence -2 --pp-co-occurrence-type paragraph --snapshot 2019-01-01 2018-01-01 --markov-time 1
 
 # Zeitlich mittel / grob
-python . de preprocess cluster cluster_evolution_mappings cluster_evolution_graph cluster_inspection cluster_evolution_inspection --clustering-method louvain --consensus 1000  --pp-co-occurrence -2 --pp-co-occurrence-type paragraph --markov-time 1 0.5
-python . de preprocess cluster cluster_evolution_mappings cluster_evolution_graph cluster_inspection cluster_evolution_inspection --clustering-method louvain --consensus 1000  --pp-co-occurrence -1 --pp-co-occurrence-type paragraph --markov-time 1
+python . de preprocess cluster cluster_evolution_mappings cluster_evolution_graph cluster_inspection cluster_evolution_inspection --clustering-method louvain --consensus 1000  --pp-co-occurrence -2 --pp-co-occurrence-type paragraph --markov-time 1 0.5 --snapshot all-new-years
+python . de preprocess cluster cluster_evolution_mappings cluster_evolution_graph cluster_inspection cluster_evolution_inspection --clustering-method louvain --consensus 1000  --pp-co-occurrence -1 --pp-co-occurrence-type paragraph --markov-time 1 --snapshot all-new-years
 
-python . de preprocess cluster cluster_evolution_mappings cluster_evolution_graph cluster_inspection cluster_evolution_inspection --pp-co-occurrence -2 --pp-co-occurrence-type paragraph --number-of-modules 100 --consensus 1000 --clustering-method infomap-directed
-python . us preprocess cluster cluster_evolution_mappings cluster_evolution_graph cluster_inspection cluster_evolution_inspection --pp-co-occurrence -2 --pp-co-occurrence-type paragraph --number-of-modules 100 --consensus 1000 --clustering-method infomap-directed
-
+python . de preprocess cluster cluster_evolution_mappings cluster_evolution_graph cluster_inspection cluster_evolution_inspection --pp-co-occurrence -2 --pp-co-occurrence-type paragraph --number-of-modules 100 --consensus 1000 --clustering-method infomap-directed --snapshot all-new-years
 
 # Source graph form Steuerrecht zoom in
-python . de preprocess --pp-co-occurrence 0 -1 -2 --pp-co-occurrence-type paragraph --pp-merge 0 --pp-ratio 1 --pp-decay 1 --snapshot 2018-01-01
+python . de preprocess --pp-co-occurrence 0 -1 -2 --pp-co-occurrence-type paragraph --pp-merge 0 --pp-ratio 1 --pp-decay 1 --snapshot 2019-01-01 2018-01-01 --single-process
 
 
 # Complexity paper
