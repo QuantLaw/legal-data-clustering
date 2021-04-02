@@ -62,7 +62,7 @@ The following steps will be executed:
     clustering algorithms.
 2. **Cluster** Perform the clustering with infomap or louvain.
 3. **Cluster Texts** Collect the text for each cluster. (This step can only be performed
-    if the text data is available [../legal-networks-data/{us,de,us_reg,de_reg}/2_xml].)
+    if the text data is available `../legal-networks-data/{us,de,us_reg,de_reg}/2_xml`.)
 4. **Cluster Evolution Mappings** Map the clusters over time.
 5. **Cluster Evolution Graph** Create a graph with clusters as nodes and edges indicating
     the dynamics of nodes between snapshots.
