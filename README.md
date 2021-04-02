@@ -13,6 +13,7 @@ It is, inter alia, used to produce the results reported in the following publica
 
 Related Repositories:
 - [Complex Societies and the Growth of the Law](https://github.com/QuantLaw/Complex-Societies-and-Growth) ([Publication Release](https://doi.org/10.5281/zenodo.4070769))
+- [Measuring Law Over Time](https://github.com/QuantLaw/Measuring-Law-Over-Time) 
 - [Legal Data Preprocessing](https://github.com/QuantLaw/legal-data-preprocessing) ([Latest Publication Release](https://doi.org/10.5281/zenodo.4070772))
 
 Related Data: 
