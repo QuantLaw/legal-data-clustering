@@ -29,7 +29,7 @@ Related Data: [Preprocessed Input Data for *Sci. Rep.* **10** (2020)](http://dx.
 
 One option is to generate the required data yourself using
 https://github.com/QuantLaw/legal-data-preprocessing (also available
-at https://doi.org/10.5281/zenodo.4070772 .)
+at https://doi.org/10.5281/zenodo.4070772).
 
 Another option is to use the generated data from  [Preprocessed Input Data for *Sci. Rep.* **10** (2020)](https://dx.doi.org/10.5281/zenodo.4070767).
 This repository also contains the clustering results. To execute the clustering, you
@@ -48,7 +48,7 @@ Required files for USA relative to this repository
 - `../legal-networks-data/us/4_crossreference_graph`
 - `../legal-networks-data/us/5_snapshot_mapping_edgelist`
 
-The combined data of statutes and regulations is located at `de_reg` and `us_reg` folders next to the `de` and `us` folder.
+The combined data of statutes and regulations is located in the `de_reg` and `us_reg` folders next to the `de` and `us` folders.
 
 
 ### Run
