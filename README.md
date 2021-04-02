@@ -29,24 +29,26 @@ Related Data: [Preprocessed Input Data for *Sci. Rep.* **10** (2020)](http://dx.
 
 One option is to generate the required data yourself using
 https://github.com/QuantLaw/legal-data-preprocessing (also available
-at http://dx.doi.org/10.5281/zenodo.4070773 .)
+at https://doi.org/10.5281/zenodo.4070772 .)
 
-Another option is to use the generated data from  [Preprocessed Input Data for *Sci. Rep.* **10** (2020)](http://dx.doi.org/10.5281/zenodo.4070767).
+Another option is to use the generated data from  [Preprocessed Input Data for *Sci. Rep.* **10** (2020)](https://dx.doi.org/10.5281/zenodo.4070767).
 This repository also contains the clustering results. To execute the clustering, you
 only need the following directories, other directories should be removed as otherwise
 clustering steps might be skipped.
 
 Required files for Germany relative to this repository
 
-- ../legal-networks-data/de/2_xml
-- ../legal-networks-data/de/4_crossreference_graph
-- ../legal-networks-data/de/5_snapshot_mapping_edgelist
+- `../legal-networks-data/de/2_xml`
+- `../legal-networks-data/de/4_crossreference_graph`
+- `../legal-networks-data/de/5_snapshot_mapping_edgelist`
 
 Required files for USA relative to this repository
 
-- ../legal-networks-data/us/2_xml
-- ../legal-networks-data/us/4_crossreference_graph
-- ../legal-networks-data/us/5_snapshot_mapping_edgelist
+- `../legal-networks-data/us/2_xml`
+- `../legal-networks-data/us/4_crossreference_graph`
+- `../legal-networks-data/us/5_snapshot_mapping_edgelist`
+
+The combined data of statutes and regulations is located at `de_reg` and `us_reg` folders next to the `de` and `us` folder.
 
 
 ### Run
@@ -60,7 +62,7 @@ The following steps will be executed:
     clustering algorithms.
 2. **Cluster** Perform the clustering with infomap or louvain.
 3. **Cluster Texts** Collect the text for each cluster. (This step can only be performed
-    if the text data is available [../legal-networks-data/{us,de}/2_xml].)
+    if the text data is available [../legal-networks-data/{us,de,us_reg,de_reg}/2_xml].)
 4. **Cluster Evolution Mappings** Map the clusters over time.
 5. **Cluster Evolution Graph** Create a graph with clusters as nodes and edges indicating
     the dynamics of nodes between snapshots.
