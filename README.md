@@ -1,20 +1,23 @@
 [![codecov](https://codecov.io/gh/QuantLaw/legal-data-clustering/branch/master/graph/badge.svg?token=COBPQNeZA7)](https://codecov.io/gh/QuantLaw/legal-data-clustering)
 [![Tests](https://github.com/QuantLaw/legal-data-clustering/workflows/Tests/badge.svg)](https://github.com/QuantLaw/legal-data-clustering/actions)
 [![Maintainability](https://api.codeclimate.com/v1/badges/a2208e96f66902047627/maintainability)](https://codeclimate.com/repos/5f1ef1fed7f1df01620111b4/maintainability)
-[![DOI](https://zenodo.org/badge/doi/10.5281/zenodo.4070774.svg)](http://dx.doi.org/10.5281/zenodo.4070774)
+[![DOI](https://zenodo.org/badge/doi/10.5281/zenodo.4070774.svg)](https://doi.org/10.5281/zenodo.4070774)
 
 # Legal Data Clustering
 
 This repository contains code to cluster legal network data.
-It is, inter alia, used to produce the results reported in the following publication:
+It is, inter alia, used to produce the results reported in the following publications:
 
-Daniel Martin Katz, Corinna Coupette, Janis Beckedorf, and Dirk Hartung, Complex Societies and the Growth of the Law, *Sci. Rep.* **10** (2020), [https://doi.org/10.1038/s41598-020-73623-x](https://doi.org/10.1038/s41598-020-73623-x)
+- Daniel Martin Katz, Corinna Coupette, Janis Beckedorf, and Dirk Hartung, Complex Societies and the Growth of the Law, *Sci. Rep.* **10** (2020), [https://doi.org/10.1038/s41598-020-73623-x](https://doi.org/10.1038/s41598-020-73623-x)
+- Corinna Coupette, Janis Beckedorf, Dirk Hartung, Michael Bommarito, and Daniel Martin Katz, Measuring Law Over Time, to appear (2021)
 
 Related Repositories:
-- [Complex Societies and the Growth of the Law](https://github.com/QuantLaw/Complex-Societies-and-Growth) ([First Publication Release](http://dx.doi.org/10.5281/zenodo.4070769))
+- [Complex Societies and the Growth of the Law](https://github.com/QuantLaw/Complex-Societies-and-Growth) ([First Publication Release](https://doi.org/10.5281/zenodo.4070769))
 - [Legal Data Preprocessing](https://github.com/QuantLaw/legal-data-preprocessing) ([Latest Publication Release](https://doi.org/10.5281/zenodo.4070772))
 
-Related Data: [Preprocessed Input Data for *Sci. Rep.* **10** (2020)](http://dx.doi.org/10.5281/zenodo.4070767)
+Related Data: 
+- [Preprocessed Input Data for *Sci. Rep.* **10** (2020)](https://doi.org/10.5281/zenodo.4070767)
+- [Preprocessed Input Data for *Measuring Law Over Time*, to appear (2021)](https://doi.org/10.5281/zenodo.4660133)
 
 ## Setup
 
@@ -31,7 +34,7 @@ One option is to generate the required data yourself using
 https://github.com/QuantLaw/legal-data-preprocessing (also available
 at https://doi.org/10.5281/zenodo.4070772).
 
-Another option is to use the generated data from  [Preprocessed Input Data for *Sci. Rep.* **10** (2020)](https://dx.doi.org/10.5281/zenodo.4070767).
+Another option is to use the generated data from the related datasets (see above).
 This repository also contains the clustering results. To execute the clustering, you
 only need the following directories, other directories should be removed as otherwise
 clustering steps might be skipped.
