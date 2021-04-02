@@ -12,7 +12,7 @@ Daniel Martin Katz, Corinna Coupette, Janis Beckedorf, and Dirk Hartung, Complex
 
 Related Repositories:
 - [Complex Societies and the Growth of the Law](https://github.com/QuantLaw/Complex-Societies-and-Growth) ([First Publication Release](http://dx.doi.org/10.5281/zenodo.4070769))
-- [Legal Data Preprocessing](https://github.com/QuantLaw/legal-data-preprocessing) ([First Publication Release](http://dx.doi.org/10.5281/zenodo.4070773))
+- [Legal Data Preprocessing](https://github.com/QuantLaw/legal-data-preprocessing) ([Latest Publication Release](https://doi.org/10.5281/zenodo.4070772))
 
 Related Data: [Preprocessed Input Data for *Sci. Rep.* **10** (2020)](http://dx.doi.org/10.5281/zenodo.4070767)
 
