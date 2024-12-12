@@ -11,7 +11,7 @@ It is, inter alia, used to produce the results reported in the following publica
 - Daniel Martin Katz, Corinna Coupette, Janis Beckedorf, and Dirk Hartung, Complex Societies and the Growth of the Law, *Sci. Rep.* **10** (2020), [https://doi.org/10.1038/s41598-020-73623-x](https://doi.org/10.1038/s41598-020-73623-x)
 - Corinna Coupette, Janis Beckedorf, Dirk Hartung, Michael Bommarito, and Daniel Martin Katz, Measuring Law Over Time, *Front. Phys.* **9:658463** (2021), https://doi.org/10.3389/fphy.2021.658463
 - Corinna Coupette, and Dirk Hartung, Rechtsstrukturvergleichung, *RabelsZ* **86**, 935-975 (2022), https://doi.org/10.1628/rabelsz-2022-0082
-- Janis Beckedorf, Komplexität des Rechts, Mohr Siebeck, to appear (2025) https://doi.org/10.1628/978-3-16-164476-4
+- Janis Beckedorf, Komplexität des Rechts, Mohr Siebeck, to appear (2025), https://doi.org/10.1628/978-3-16-164476-4
 
 
 Related Repositories:
